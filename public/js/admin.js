@@ -89,7 +89,7 @@ function renderTable(users) {
         </label>
       </td>
       <td>
-        <button class="features-btn ${allOn ? 'all-on' : ''}" ${disabledAttr} onclick="openFeatureModal(${u.id})">
+        <button class="features-btn ${allOn ? 'all-on' : ''}" ${disabledAttr} onclick="openFeatureModal('${u.id}')">
           <i class="ti ti-adjustments-horizontal"></i> ${onFeatures}/${FEATURE_KEYS.length} on
           ${!allOn ? `<span class="fb-count">${u.disabled_features.length} off</span>` : ''}
         </button>

@@ -148,15 +148,15 @@ function renderLoans(loans) {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>
           </button>
           <div class="actions-menu">
-            <button onclick="closeActionMenus(); openEdit(${loan.id})">
+            <button onclick="closeActionMenus(); openEdit('${loan.id}')">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
               Edit
             </button>
-            <button onclick="closeActionMenus(); toggleStatus(${loan.id}, '${loan.status}')">
+            <button onclick="closeActionMenus(); toggleStatus('${loan.id}', '${loan.status}')">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
               ${loan.status === 'done' ? 'Mark undone' : 'Mark done'}
             </button>
-            <button class="danger" onclick="closeActionMenus(); deleteLoan(${loan.id})">
+            <button class="danger" onclick="closeActionMenus(); deleteLoan('${loan.id}')">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
               Delete
             </button>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem("mpa-theme")||"dark";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<script>(function(){try{if(!localStorage.getItem("mpa-token")){window.location.replace("login.html");}else{document.documentElement.classList.add("mpa-gate");}}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loans — Minhas Personal Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.44.0/tabler-icons.min.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/auth.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/loans.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div class="brand-text">Minhas<span>Personal Assistant</span></div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Overview</div>
+      <a href="index.html" class="nav-item" data-page="dashboard"><i class="ti ti-layout-dashboard"></i><span>Dashboard</span></a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Money</div>
+      <a href="loans.html" class="nav-item active" data-page="loans"><i class="ti ti-arrows-exchange"></i><span>Loans</span></a>
+      <a href="rent.html" class="nav-item" data-page="rent"><i class="ti ti-home-2"></i><span>Rent</span></a>
+      <a href="bills.html" class="nav-item" data-page="bills"><i class="ti ti-file-invoice"></i><span>Bills</span></a>
+      <a href="expenses.html" class="nav-item" data-page="expenses"><i class="ti ti-receipt"></i><span>Daily expenses</span></a>
+      <a href="savings.html" class="nav-item" data-page="savings"><i class="ti ti-trending-up"></i><span>Savings insights</span></a>
+      <a href="investments.html" class="nav-item" data-page="investments"><i class="ti ti-building-bank"></i><span>Investments</span></a>
+      <a href="committees.html" class="nav-item" data-page="committees"><i class="ti ti-users-group"></i><span>Committees</span></a>
+      <a href="salary.html" class="nav-item" data-page="salary"><i class="ti ti-calculator"></i><span>Salary calculator</span></a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">System</div>
+      <div class="nav-item" data-page="settings"><i class="ti ti-settings"></i><span>Settings</span></div>
+      <button type="button" class="theme-toggle-btn" id="themeToggleBtn"><i class="ti ti-sun" id="themeToggleIcon"></i><span id="themeToggleLabel">Light mode</span></button>
+    </div>
+
+    <div class="sidebar-footer">
+      Connected to <strong style="color:var(--text-secondary)">MinhasPA</strong> (MSSQL)
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h1>Loans</h1>
+        <div class="topbar-sub">Money you owe, money owed to you — friends, family, and your father's loans.<span class="loans-count-pill" id="loansCountPill"><i class="ti ti-list-details" style="font-size:12px"></i> 0 records</span></div>
+      </div>
+      <div class="topbar-right">
+        <div class="cal-filter" id="calFilter">
+          <button type="button" class="cal-filter-btn" id="calFilterBtn">
+            <i class="ti ti-calendar-event"></i>
+            <span id="calFilterLabel">All months</span>
+            <i class="ti ti-chevron-down"></i>
+          </button>
+          <div class="cal-popup" id="calPopup">
+            <div class="cal-popup-header">
+              <button type="button" class="cal-nav" id="calPrevYear"><i class="ti ti-chevron-left"></i></button>
+              <span class="cal-year-label" id="calYearLabel">2026</span>
+              <button type="button" class="cal-nav" id="calNextYear"><i class="ti ti-chevron-right"></i></button>
+            </div>
+            <div class="cal-month-grid" id="calMonthGrid"></div>
+            <button type="button" class="cal-all-btn" id="calAllMonths">All months</button>
+          </div>
+        </div>
+        <button class="btn btn-select" id="selectModeBtn" type="button"><i class="ti ti-checkbox"></i> Select</button>
+        <button class="btn btn-primary" id="addLoanBtn"><i class="ti ti-plus" style="font-size:15px"></i> Add loan</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- Summary strip -->
+      <div class="stat-grid stat-grid-3">
+        <div class="stat-card">
+          <div class="stat-label"><i class="ti ti-arrow-down-circle" style="color:var(--danger)"></i> You owe</div>
+          <div class="stat-value negative" id="sumTaken">Rs 0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="ti ti-arrow-up-circle" style="color:var(--success)"></i> Owed to you</div>
+          <div class="stat-value positive" id="sumGiven">Rs 0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="ti ti-alert-triangle" style="color:var(--warning)"></i> Critical (due ≤7 days)</div>
+          <div class="stat-value neutral" id="sumCritical">0</div>
+        </div>
+      </div>
+
+      <!-- Filter chips -->
+      <div class="chip-row" id="chipRow">
+        <button class="chip active" data-filter="all">All</button>
+        <button class="chip" data-filter="taken">Taken</button>
+        <button class="chip" data-filter="given">Given</button>
+        <button class="chip" data-filter="pending">Undone</button>
+        <button class="chip" data-filter="done">Done</button>
+        <button class="chip chip-danger" data-filter="critical">Critical</button>
+      </div>
+
+      <!-- Loans list -->
+      <div class="panel">
+        <div class="table-scroll loans-scroll">
+          <table class="loans-table" id="loansTable">
+            <thead>
+              <tr>
+                <th class="select-col"><input type="checkbox" id="selectAllLoans" title="Select all"></th>
+                <th>Person</th>
+                <th>Description</th>
+                <th>Amount</th>
+                <th>Taken on</th>
+                <th>Due</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="loansBody">
+              <tr><td colspan="8"><div class="empty-state"><i class="ti ti-loader-2"></i><span>Loading loans…</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Floating selection summary bar -->
+<div class="select-sum-bar" id="selectSumBar">
+  <div class="select-sum-bar-inner">
+    <button class="select-sum-close" id="exitSelectBtn" title="Exit selection"><i class="ti ti-x"></i></button>
+    <div class="select-sum-count"><span id="selectCount">0</span> selected</div>
+    <div class="select-sum-divider"></div>
+    <div class="select-sum-breakdown">
+      <span class="select-sum-chip taken"><i class="ti ti-arrow-down-circle"></i> Taken: <b id="selectSumTaken">Rs 0</b></span>
+      <span class="select-sum-chip given"><i class="ti ti-arrow-up-circle"></i> Given: <b id="selectSumGiven">Rs 0</b></span>
+    </div>
+    <div class="select-sum-divider"></div>
+    <div class="select-sum-total">
+      <span>Total</span>
+      <strong id="selectSumTotal">Rs 0</strong>
+    </div>
+    <button class="btn btn-ghost select-sum-clear" id="clearSelectBtn">Clear</button>
+  </div>
+</div>
+
+<!-- Add / edit modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">Add a loan</h3>
+      <button class="modal-close" id="modalClose"><i class="ti ti-x"></i></button>
+    </div>
+    <form id="loanForm">
+      <input type="hidden" id="loanId">
+
+      <div class="form-row">
+        <label>Direction</label>
+        <div class="segmented">
+          <button type="button" class="seg-btn active" data-value="taken">I took this</button>
+          <button type="button" class="seg-btn" data-value="given">I gave this</button>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label for="personName">Person</label>
+        <input type="text" id="personName" placeholder="e.g. Ahmed, Father, Bilal" required>
+      </div>
+
+      <div class="form-row two-col">
+        <div>
+          <label for="amount">Amount (Rs)</label>
+          <input type="number" id="amount" step="0.01" min="0" required>
+        </div>
+        <div>
+          <label for="status">Status</label>
+          <select id="status">
+            <option value="pending">Undone</option>
+            <option value="done">Done</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label for="description">Description</label>
+        <input type="text" id="description" placeholder="What was it for?">
+      </div>
+
+      <div class="form-row two-col">
+        <div>
+          <label for="dateTaken" id="dateTakenLabel">Date taken</label>
+          <input type="date" id="dateTaken" required>
+        </div>
+        <div>
+          <label for="dueDate">Due date</label>
+          <input type="date" id="dueDate">
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="cancelBtn">Cancel</button>
+        <button type="submit" class="btn btn-pill">Save loan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/loans.js"></script>
+</body>
+</html>

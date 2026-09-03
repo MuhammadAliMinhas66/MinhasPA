@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem("mpa-theme")||"dark";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<script>(function(){try{if(!localStorage.getItem("mpa-token")){window.location.replace("login.html");}else{document.documentElement.classList.add("mpa-gate");}}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Investments — Minhas Personal Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.44.0/tabler-icons.min.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/auth.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/investments.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div class="brand-text">Minhas<span>Personal Assistant</span></div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Overview</div>
+      <a href="index.html" class="nav-item" data-page="dashboard"><i class="ti ti-layout-dashboard"></i><span>Dashboard</span></a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Money</div>
+      <a href="loans.html" class="nav-item" data-page="loans"><i class="ti ti-arrows-exchange"></i><span>Loans</span></a>
+      <a href="rent.html" class="nav-item" data-page="rent"><i class="ti ti-home-2"></i><span>Rent</span></a>
+      <a href="bills.html" class="nav-item" data-page="bills"><i class="ti ti-file-invoice"></i><span>Bills</span></a>
+      <a href="expenses.html" class="nav-item" data-page="expenses"><i class="ti ti-receipt"></i><span>Daily expenses</span></a>
+      <a href="savings.html" class="nav-item" data-page="savings"><i class="ti ti-trending-up"></i><span>Savings insights</span></a>
+      <a href="investments.html" class="nav-item active" data-page="investments"><i class="ti ti-building-bank"></i><span>Investments</span></a>
+      <a href="committees.html" class="nav-item" data-page="committees"><i class="ti ti-users-group"></i><span>Committees</span></a>
+      <a href="salary.html" class="nav-item" data-page="salary"><i class="ti ti-calculator"></i><span>Salary calculator</span></a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">System</div>
+      <div class="nav-item" data-page="settings"><i class="ti ti-settings"></i><span>Settings</span></div>
+      <button type="button" class="theme-toggle-btn" id="themeToggleBtn"><i class="ti ti-sun" id="themeToggleIcon"></i><span id="themeToggleLabel">Light mode</span></button>
+    </div>
+
+    <div class="sidebar-footer">
+      Connected to <strong style="color:var(--text-secondary)">MinhasPA</strong> (MSSQL)
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h1>Investments</h1>
+        <div class="topbar-sub">Everything you own that's meant to grow — stocks, crypto, gold, property, and business capital, all in one place.<span class="loans-count-pill" id="invCountPill"><i class="ti ti-list-details" style="font-size:12px"></i> 0 holdings</span></div>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-ghost" id="refreshPricesBtn"><i class="ti ti-refresh" style="font-size:15px"></i> Refresh prices</button>
+        <button class="btn btn-primary" id="addInvBtn"><i class="ti ti-plus" style="font-size:15px"></i> Add investment</button>
+      </div>
+    </div>
+
+    <div class="content" id="investmentsContent">
+
+      <!-- Portfolio summary -->
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-label"><i class="ti ti-coins" style="color:var(--accent)"></i> Total invested</div>
+          <div class="stat-value neutral" id="statInvested">Rs 0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="ti ti-wallet" style="color:var(--accent)"></i> Current value</div>
+          <div class="stat-value neutral" id="statCurrent">Rs 0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="ti ti-chart-arrows-vertical" style="color:var(--success)"></i> Total gain / loss</div>
+          <div class="stat-value positive" id="statGainLoss">Rs 0</div>
+          <div class="stat-delta" id="statGainLossPct">0%</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="ti ti-building-bank" style="color:var(--accent)"></i> Holdings</div>
+          <div class="stat-value neutral" id="statHoldings">0</div>
+        </div>
+      </div>
+
+      <div class="panel-grid">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Portfolio breakdown</h2>
+              <p>Current value by asset type</p>
+            </div>
+          </div>
+          <div class="chart-layout">
+            <div class="chart-donut-wrap">
+              <canvas id="typeChart"></canvas>
+              <div class="chart-center" id="chartCenter">
+                <div class="chart-center-value" id="chartCenterValue">Rs 0</div>
+                <div class="chart-center-label">Current value</div>
+              </div>
+            </div>
+            <div class="chart-legend" id="chartLegend">
+              <div class="empty-state"><i class="ti ti-chart-donut-3"></i><span>No holdings yet</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Realized (sold)</h2>
+              <p>What you've cashed out so far</p>
+            </div>
+          </div>
+          <div id="realizedBox" class="realized-box">
+            <div class="empty-state"><i class="ti ti-loader-2"></i><span>Loading…</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter chips -->
+      <div class="chip-row" id="chipRow">
+        <button class="chip active" data-filter="all">All</button>
+        <button class="chip" data-filter="stocks">Stocks</button>
+        <button class="chip" data-filter="crypto">Crypto</button>
+        <button class="chip" data-filter="gold">Gold</button>
+        <button class="chip" data-filter="property">Property</button>
+        <button class="chip" data-filter="business">Business</button>
+        <button class="chip" data-filter="vehicle">Vehicle</button>
+        <button class="chip" data-filter="bonds">Bonds / FD</button>
+        <button class="chip" data-filter="cash">Cash</button>
+        <button class="chip" data-filter="other">Other</button>
+        <span class="chip-divider"></span>
+        <button class="chip" data-filter="sold">Sold</button>
+      </div>
+
+      <!-- Holdings list -->
+      <div class="panel">
+        <div class="table-scroll loans-scroll">
+          <table class="loans-table inv-table" id="invTable">
+            <thead>
+              <tr>
+                <th>Asset</th>
+                <th>Type</th>
+                <th>Invested</th>
+                <th>Current value</th>
+                <th>Gain / loss</th>
+                <th>Purchased</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="invBody">
+              <tr><td colspan="8"><div class="empty-state"><i class="ti ti-loader-2"></i><span>Loading investments…</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Shown instead of investmentsContent for free-plan users -->
+    <div class="content" id="investmentsPaywall" style="display:none">
+      <div class="panel paywall-panel">
+        <div class="paywall-icon"><i class="ti ti-lock"></i></div>
+        <h2>Investments is a Premium feature</h2>
+        <p>Track stocks, crypto, gold, property, and business capital with live market prices — upgrade your account to unlock it.</p>
+        <ul class="paywall-features">
+          <li><i class="ti ti-check"></i> Live stock, crypto, and gold prices</li>
+          <li><i class="ti ti-check"></i> Automatic gain/loss tracking</li>
+          <li><i class="ti ti-check"></i> Portfolio breakdown by asset type</li>
+        </ul>
+        <p class="paywall-hint">Ask your admin to upgrade your account to Premium to unlock this page.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add / edit modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">Add an investment</h3>
+      <button class="modal-close" id="modalClose"><i class="ti ti-x"></i></button>
+    </div>
+    <form id="invForm">
+      <input type="hidden" id="invId">
+
+      <div class="form-row">
+        <label>Type</label>
+        <div class="type-picker" id="typePicker">
+          <button type="button" class="type-opt" data-value="stocks"><i class="ti ti-chart-candle"></i><span>Stocks</span></button>
+          <button type="button" class="type-opt" data-value="crypto"><i class="ti ti-currency-bitcoin"></i><span>Crypto</span></button>
+          <button type="button" class="type-opt" data-value="gold"><i class="ti ti-diamond"></i><span>Gold</span></button>
+          <button type="button" class="type-opt" data-value="property"><i class="ti ti-building-estate"></i><span>Property</span></button>
+          <button type="button" class="type-opt" data-value="business"><i class="ti ti-briefcase"></i><span>Business</span></button>
+          <button type="button" class="type-opt" data-value="vehicle"><i class="ti ti-car"></i><span>Vehicle</span></button>
+          <button type="button" class="type-opt" data-value="bonds"><i class="ti ti-certificate"></i><span>Bonds/FD</span></button>
+          <button type="button" class="type-opt" data-value="cash"><i class="ti ti-cash"></i><span>Cash</span></button>
+          <button type="button" class="type-opt" data-value="other"><i class="ti ti-category"></i><span>Other</span></button>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label for="invName">Name</label>
+        <input type="text" id="invName" placeholder="e.g. Bitcoin, House — DHA Phase 6, Shop capital" required>
+      </div>
+
+      <!-- ===== MARKET fields: stocks / crypto / gold ===== -->
+      <div id="marketFields" style="display:none">
+        <div class="form-row" id="assetSearchRow">
+          <label for="assetSearch">Search <span id="assetSearchTypeLabel"></span></label>
+          <div class="search-combo">
+            <input type="text" id="assetSearch" placeholder="Start typing a name or symbol…" autocomplete="off">
+            <div class="search-results" id="searchResults"></div>
+          </div>
+          <div class="selected-asset-chip" id="selectedAssetChip" style="display:none"></div>
+        </div>
+
+        <div class="form-row" id="goldUnitRow" style="display:none">
+          <label for="goldUnit">Unit</label>
+          <select id="goldUnit">
+            <option value="gram">Gram</option>
+            <option value="tola">Tola</option>
+            <option value="ounce">Ounce (troy)</option>
+            <option value="kilogram">Kilogram</option>
+          </select>
+        </div>
+
+        <div class="form-row two-col">
+          <div>
+            <label for="marketQuantity">Quantity</label>
+            <input type="number" id="marketQuantity" step="any" min="0" placeholder="e.g. 10">
+          </div>
+          <div>
+            <label for="marketPurchasePrice">Purchase price / unit</label>
+            <input type="number" id="marketPurchasePrice" step="any" min="0" placeholder="Price you paid, per unit">
+          </div>
+        </div>
+
+        <p class="form-hint"><i class="ti ti-info-circle"></i> Current value is fetched automatically from live market data — no need to enter it. Invested amount = quantity × purchase price.</p>
+      </div>
+
+      <!-- ===== CALCULATED fields: bonds / FD ===== -->
+      <div id="calculatedFields" style="display:none">
+        <div class="form-row">
+          <label for="principalAmount">Principal (Rs)</label>
+          <input type="number" id="principalAmount" step="0.01" min="0" placeholder="Amount deposited">
+        </div>
+        <div class="form-row two-col">
+          <div>
+            <label for="interestRate">Interest rate (annual %)</label>
+            <input type="number" id="interestRate" step="0.01" min="0" placeholder="e.g. 21.5">
+          </div>
+          <div>
+            <label for="interestType">Interest type</label>
+            <select id="interestType">
+              <option value="simple">Simple</option>
+              <option value="compound">Compound</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <label for="maturityDate">Maturity date <span class="optional-tag">optional</span></label>
+          <input type="date" id="maturityDate">
+        </div>
+        <p class="form-hint"><i class="ti ti-info-circle"></i> Current value is calculated from the accrued interest since purchase — not a live market feed.</p>
+      </div>
+
+      <!-- ===== MANUAL fields: property / business / vehicle / cash / other ===== -->
+      <div id="manualFields" style="display:none">
+        <div class="form-row two-col">
+          <div>
+            <label for="investedAmount">Invested amount (Rs)</label>
+            <input type="number" id="investedAmount" step="0.01" min="0" placeholder="What you put in">
+          </div>
+          <div>
+            <label for="currentValue">Current value (Rs)</label>
+            <input type="number" id="currentValue" step="0.01" min="0" placeholder="Your best estimate today">
+          </div>
+        </div>
+        <p class="form-hint"><i class="ti ti-info-circle"></i> This is an estimated value you enter yourself — there's no live price feed for this asset type.</p>
+      </div>
+
+      <div class="form-row two-col">
+        <div>
+          <label for="purchaseDate">Purchase date</label>
+          <input type="date" id="purchaseDate">
+        </div>
+        <div>
+          <label for="invStatus">Status</label>
+          <select id="invStatus">
+            <option value="active">Active — still holding</option>
+            <option value="sold">Sold</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row two-col" id="soldFields" style="display:none">
+        <div>
+          <label for="soldValue">Sold for (Rs)</label>
+          <input type="number" id="soldValue" step="0.01" min="0">
+        </div>
+        <div>
+          <label for="soldDate">Sold date</label>
+          <input type="date" id="soldDate">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label for="invDescription">Description <span class="optional-tag">optional</span></label>
+        <input type="text" id="invDescription" placeholder="Any detail worth remembering">
+      </div>
+
+      <div class="form-row">
+        <label for="invNotes">Notes <span class="optional-tag">optional</span></label>
+        <input type="text" id="invNotes" placeholder="Anything else">
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="cancelBtn">Cancel</button>
+        <button type="submit" class="btn btn-pill">Save investment</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Quick value-update modal -->
+<div class="modal-overlay" id="valueModalOverlay">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <h3>Update current value</h3>
+      <button class="modal-close" id="valueModalClose"><i class="ti ti-x"></i></button>
+    </div>
+    <form id="valueForm">
+      <input type="hidden" id="valueInvId">
+      <div class="form-row">
+        <label for="valueInput" id="valueInvLabel">New current value (Rs)</label>
+        <input type="number" id="valueInput" step="0.01" min="0" required autofocus>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="valueCancelBtn">Cancel</button>
+        <button type="submit" class="btn btn-pill">Update</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js"></script>
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/investments.js"></script>
+</body>
+</html>

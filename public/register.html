@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem("mpa-theme")||"dark";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<script>(function(){try{if(localStorage.getItem("mpa-token")){window.location.replace("index.html");}}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create account — Minhas Personal Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.44.0/tabler-icons.min.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/auth.css">
+</head>
+<body class="auth-page">
+
+<div class="auth-shell">
+
+  <div class="auth-bg" aria-hidden="true">
+    <div class="auth-bg-blob auth-bg-blob-1"></div>
+    <div class="auth-bg-blob auth-bg-blob-2"></div>
+    <div class="auth-bg-grid"></div>
+
+    <svg class="auth-bg-chart" viewBox="0 0 600 200" preserveAspectRatio="none">
+      <path class="auth-bg-chart-line" d="M0,150 C60,120 90,170 150,110 C210,50 240,130 300,90 C360,50 390,110 450,70 C510,30 540,80 600,40" />
+      <path class="auth-bg-chart-fill" d="M0,150 C60,120 90,170 150,110 C210,50 240,130 300,90 C360,50 390,110 450,70 C510,30 540,80 600,40 L600,200 L0,200 Z" />
+    </svg>
+
+    <span class="auth-float auth-float-1"><i class="ti ti-currency-dollar"></i></span>
+    <span class="auth-float auth-float-2"><i class="ti ti-coin"></i></span>
+    <span class="auth-float auth-float-3"><i class="ti ti-chart-line"></i></span>
+    <span class="auth-float auth-float-4"><i class="ti ti-currency-rupee"></i></span>
+    <span class="auth-float auth-float-5"><i class="ti ti-wallet"></i></span>
+    <span class="auth-float auth-float-6"><i class="ti ti-trending-up"></i></span>
+  </div>
+
+  <div class="auth-card">
+    <div class="auth-brand">
+      <div class="brand-mark">M</div>
+      <div class="brand-text">Minhas<span>Personal Assistant</span></div>
+    </div>
+
+    <div class="auth-head">
+      <h1>Create your account</h1>
+      <p>Takes a minute — then it's your own private tracker.</p>
+    </div>
+
+    <div class="auth-error" id="authError"><i class="ti ti-alert-circle"></i><span id="authErrorText"></span></div>
+    <div class="auth-success" id="authSuccess"><i class="ti ti-circle-check"></i><span id="authSuccessText"></span></div>
+
+    <form class="auth-form" id="registerForm" novalidate>
+      <div class="auth-field">
+        <label for="regFullName">Full name</label>
+        <div class="auth-input-wrap">
+          <i class="ti ti-id-badge-2"></i>
+          <input type="text" id="regFullName" name="full_name" placeholder="Muhammad Ali Minhas" autocomplete="name" required>
+        </div>
+      </div>
+
+      <div class="auth-field">
+        <label for="regUsername">Username</label>
+        <div class="auth-input-wrap">
+          <i class="ti ti-user"></i>
+          <input type="text" id="regUsername" name="username" placeholder="hero_the_coder" autocomplete="username" pattern="[a-zA-Z0-9_]{3,40}" required>
+        </div>
+        <div class="auth-hint">3-40 characters — letters, numbers &amp; underscore only</div>
+      </div>
+
+      <div class="auth-field">
+        <label for="regEmail">Email</label>
+        <div class="auth-input-wrap">
+          <i class="ti ti-mail"></i>
+          <input type="email" id="regEmail" name="email" placeholder="you@email.com" autocomplete="email" required>
+        </div>
+      </div>
+
+      <div class="auth-field">
+        <label for="regPassword">Password</label>
+        <div class="auth-input-wrap">
+          <i class="ti ti-lock"></i>
+          <input type="password" id="regPassword" name="password" placeholder="At least 8 characters" autocomplete="new-password" minlength="8" required>
+          <button type="button" class="auth-toggle-pw" data-target="regPassword"><i class="ti ti-eye"></i></button>
+        </div>
+        <div class="auth-strength" id="regStrength">
+          <div class="auth-strength-bar"></div>
+          <div class="auth-strength-bar"></div>
+          <div class="auth-strength-bar"></div>
+          <div class="auth-strength-bar"></div>
+        </div>
+        <div class="auth-strength-label" id="regStrengthLabel">&nbsp;</div>
+      </div>
+
+      <div class="auth-field">
+        <label for="regPassword2">Confirm password</label>
+        <div class="auth-input-wrap">
+          <i class="ti ti-lock-check"></i>
+          <input type="password" id="regPassword2" name="password2" placeholder="Re-type your password" autocomplete="new-password" required>
+          <button type="button" class="auth-toggle-pw" data-target="regPassword2"><i class="ti ti-eye"></i></button>
+        </div>
+      </div>
+
+      <button type="submit" class="auth-submit" id="registerSubmit">
+        <i class="ti ti-user-plus"></i>
+        <span>Create account</span>
+      </button>
+    </form>
+
+    <div class="auth-switch">Already have an account? <a href="login.html">Log in</a></div>
+
+    <div class="auth-secure-note"><i class="ti ti-shield-check"></i> Your password is hashed with bcrypt before it ever touches the database</div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem("mpa-theme")||"dark";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<script>(function(){try{if(!localStorage.getItem("mpa-token")){window.location.replace("login.html");}else{document.documentElement.classList.add("mpa-gate");}}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily expenses — Minhas Personal Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.44.0/tabler-icons.min.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/auth.css">
+<link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div class="brand-text">Minhas<span>Personal Assistant</span></div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Overview</div>
+      <a href="index.html" class="nav-item" data-page="dashboard"><i class="ti ti-layout-dashboard"></i><span>Dashboard</span></a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Money</div>
+      <a href="loans.html" class="nav-item" data-page="loans"><i class="ti ti-arrows-exchange"></i><span>Loans</span></a>
+      <a href="rent.html" class="nav-item" data-page="rent"><i class="ti ti-home-2"></i><span>Rent</span></a>
+      <a href="bills.html" class="nav-item" data-page="bills"><i class="ti ti-file-invoice"></i><span>Bills</span></a>
+      <a href="expenses.html" class="nav-item active" data-page="expenses"><i class="ti ti-receipt"></i><span>Daily expenses</span></a>
+      <a href="savings.html" class="nav-item" data-page="savings"><i class="ti ti-trending-up"></i><span>Savings insights</span></a>
+      <a href="investments.html" class="nav-item" data-page="investments"><i class="ti ti-building-bank"></i><span>Investments</span></a>
+      <a href="committees.html" class="nav-item" data-page="committees"><i class="ti ti-users-group"></i><span>Committees</span></a>
+      <a href="salary.html" class="nav-item" data-page="salary"><i class="ti ti-calculator"></i><span>Salary calculator</span></a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">System</div>
+      <div class="nav-item" data-page="settings"><i class="ti ti-settings"></i><span>Settings</span></div>
+      <button type="button" class="theme-toggle-btn" id="themeToggleBtn"><i class="ti ti-sun" id="themeToggleIcon"></i><span id="themeToggleLabel">Light mode</span></button>
+    </div>
+
+    <div class="sidebar-footer">
+      Connected to <strong style="color:var(--text-secondary)">MinhasPA</strong> (MSSQL)
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h1>Daily expenses</h1>
+        <div class="topbar-sub">Mobile, meals, grocery, travel, family, kameti &amp; more.</div>
+      </div>
+      <div class="topbar-right">
+
+        <div class="date-filter" id="dateFilter">
+          <button class="date-filter-btn" id="dateFilterBtn" type="button">
+            <i class="ti ti-calendar-event"></i>
+            <span id="dateFilterLabel">This month</span>
+            <i class="ti ti-chevron-down date-filter-chevron"></i>
+          </button>
+
+          <div class="date-filter-panel" id="dateFilterPanel">
+            <div class="date-filter-presets" id="datePresets">
+              <button class="preset-btn active" data-preset="month" type="button">This month</button>
+              <button class="preset-btn" data-preset="last-month" type="button">Last month</button>
+              <button class="preset-btn" data-preset="year" type="button">This year</button>
+              <button class="preset-btn" data-preset="all" type="button">All time</button>
+            </div>
+
+            <div class="date-filter-divider"><span>or choose</span></div>
+
+            <div class="date-filter-row">
+              <label for="monthPicker"><i class="ti ti-calendar-month"></i> Month &amp; year</label>
+              <input type="month" id="monthPicker">
+            </div>
+
+            <div class="date-filter-row">
+              <label for="dayPicker"><i class="ti ti-calendar-search"></i> Search a specific day</label>
+              <input type="date" id="dayPicker">
+            </div>
+
+            <div class="date-filter-actions">
+              <button class="btn btn-ghost" id="clearDateFilter" type="button">Reset</button>
+              <button class="btn btn-primary" id="applyDateFilter" type="button">Apply</button>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" id="addExpenseBtn"><i class="ti ti-plus" style="font-size:15px"></i> Add expense</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <div class="stat-grid stat-grid-3">
+        <div class="stat-card">
+          <div class="stat-label"><i class="ti ti-receipt-2" style="color:var(--accent)"></i> Total this period</div>
+          <div class="stat-value neutral" id="totalSpent">Rs 0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="ti ti-chart-pie" style="color:var(--accent)"></i> Top category</div>
+          <div class="stat-value neutral" id="topCategory">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="ti ti-list-details" style="color:var(--accent)"></i> Entries</div>
+          <div class="stat-value neutral" id="entryCount">0</div>
+        </div>
+      </div>
+
+      <div class="expenses-layout">
+
+        <!-- Sticky vertical category filter rail -->
+        <aside class="category-rail">
+          <div class="category-rail-inner" id="categoryRailInner">
+            <div class="category-rail-header">
+              <i class="ti ti-filter"></i>
+              <span>Categories</span>
+            </div>
+            <div class="category-rail-list" id="categoryRailList">
+              <button class="rail-item active" data-filter="" style="--cat-color:#d4a24e">
+                <span class="rail-dot"><i class="ti ti-layout-grid"></i></span>
+                <span class="rail-label">All</span>
+              </button>
+              <div class="rail-loading" id="railLoading"><i class="ti ti-loader-2"></i> Loading…</div>
+            </div>
+            <button class="category-rail-add" id="railAddCategoryBtn" type="button">
+              <i class="ti ti-plus"></i> New category
+            </button>
+          </div>
+        </aside>
+
+        <div class="expenses-main">
+
+          <div class="panel chart-panel">
+            <div class="panel-header">
+              <div>
+                <h2>Spending by category</h2>
+                <p>Selected period</p>
+              </div>
+            </div>
+            <div class="chart-layout">
+              <div class="chart-donut-wrap">
+                <canvas id="categoryChart"></canvas>
+                <div class="chart-center" id="chartCenter">
+                  <div class="chart-center-value" id="chartCenterValue">Rs 0</div>
+                  <div class="chart-center-label">Total spent</div>
+                </div>
+              </div>
+              <div class="chart-legend" id="chartLegend">
+                <div class="empty-state"><i class="ti ti-chart-donut-3"></i><span>No data for this period yet</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <h2>Paid vs unpaid</h2>
+                <p>Green = paid. Red = you must pay. Orange = you must pay someone back.</p>
+              </div>
+            </div>
+            <div class="status-breakdown" id="statusBreakdown"></div>
+          </div>
+
+          <div class="panel">
+            <div class="status-legend">
+              <span class="status-legend-title"><i class="ti ti-info-circle"></i> Row colour key:</span>
+              <span class="status-legend-item"><span class="status-legend-dot paid"></span> Paid</span>
+              <span class="status-legend-item"><span class="status-legend-dot unpaid"></span> Unpaid — still to be paid</span>
+            </div>
+            <div class="table-scroll">
+              <table class="loans-table">
+                <thead>
+                  <tr>
+                    <th>Category</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th>Paid by</th>
+                    <th>Note</th>
+                    <th>Status</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="expensesBody">
+                  <tr><td colspan="7"><div class="empty-state"><i class="ti ti-loader-2"></i><span>Loading expenses…</span></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">Add an expense</h3>
+      <button class="modal-close" id="modalClose"><i class="ti ti-x"></i></button>
+    </div>
+    <form id="expenseForm">
+      <input type="hidden" id="expenseId">
+
+      <div class="form-row">
+        <label for="category">Category</label>
+        <select id="category" required>
+          <option value="__loading__">Loading categories…</option>
+        </select>
+      </div>
+
+      <div class="new-cat-box" id="newCatBox">
+        <div class="new-cat-row">
+          <label for="newCatLabel">New category name</label>
+          <input type="text" id="newCatLabel" placeholder="e.g. Pets, Gym, Charity">
+        </div>
+        <div class="new-cat-preview">
+          <span class="new-cat-preview-icon" id="newCatPreviewIcon"><i class="ti ti-tag"></i></span>
+          <span id="newCatPreviewLabel">Your new category</span>
+          <span class="new-cat-preview-hint">Icon &amp; colour matched automatically</span>
+        </div>
+      </div>
+
+      <div class="form-row two-col">
+        <div>
+          <label for="amount">Amount (Rs)</label>
+          <input type="number" id="amount" step="0.01" min="0" required>
+        </div>
+        <div>
+          <label for="expenseDate">Date</label>
+          <input type="date" id="expenseDate" required>
+        </div>
+      </div>
+
+      <div class="form-row two-col">
+        <div>
+          <label for="paidBy">Paid by</label>
+          <select id="paidBy">
+            <option value="me">Me</option>
+            <option value="other">Someone else</option>
+          </select>
+        </div>
+        <div id="payerNameWrap" style="display:none">
+          <label for="payerName">Who paid</label>
+          <input type="text" id="payerName" placeholder="e.g. Dad — press Enter">
+        </div>
+      </div>
+
+      <div class="form-row two-col">
+        <div>
+          <label for="status">Status</label>
+          <select id="status">
+            <option value="paid">Paid</option>
+            <option value="unpaid">Unpaid — to be paid</option>
+          </select>
+        </div>
+        <div>
+          <label for="note">Note (optional)</label>
+          <input type="text" id="note" placeholder="What was this for?">
+        </div>
+      </div>
+
+      <div class="link-loan-box" id="linkLoanBox" style="display:none">
+        <label class="link-loan-checkbox">
+          <input type="checkbox" id="linkLoanCheckbox">
+          <span><i class="ti ti-link"></i> Also track this as a loan on the Loans page</span>
+        </label>
+        <p class="link-loan-hint">Recommended — this way the debt shows up in one place, and marking it paid here (or done on Loans) settles both automatically.</p>
+      </div>
+
+      <div class="link-loan-status" id="linkLoanStatus" style="display:none">
+        <i class="ti ti-link"></i>
+        <span>Linked to a loan for <b id="linkLoanPerson"></b> — marking this Paid will also mark that loan Done.</span>
+        <button type="button" id="unlinkLoanBtn"><i class="ti ti-unlink"></i> Unlink</button>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="cancelBtn">Cancel</button>
+        <button type="submit" class="btn btn-pill" id="saveExpenseBtn">Save expense</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Link this expense to a Loans entry, so the debt is only counted once -->
+<div class="modal-overlay" id="linkModalOverlay">
+  <div class="modal link-modal">
+    <div class="modal-header">
+      <h3>Link this to Loans</h3>
+      <button class="modal-close" id="linkModalClose"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="link-modal-body">
+      <p class="link-modal-intro" id="linkModalIntro"></p>
+
+      <div class="link-tabs">
+        <button type="button" class="link-tab active" data-tab="new"><i class="ti ti-plus"></i> Create a new loan</button>
+        <button type="button" class="link-tab" data-tab="existing"><i class="ti ti-list-search"></i> Link an existing one</button>
+      </div>
+
+      <div class="link-tab-panel" id="linkPanelNew">
+        <div class="link-preview-card">
+          <div class="link-preview-row"><span>Person</span><b id="linkPreviewPerson">—</b></div>
+          <div class="link-preview-row"><span>Amount</span><b id="linkPreviewAmount">—</b></div>
+          <div class="link-preview-row"><span>Note</span><b id="linkPreviewNote">—</b></div>
+        </div>
+        <p class="link-modal-hint">This creates a new "taken" loan from this person with these details — the expense stays exactly as it is.</p>
+      </div>
+
+      <div class="link-tab-panel" id="linkPanelExisting" style="display:none">
+        <div class="link-existing-list" id="linkExistingList">
+          <div class="empty-state"><i class="ti ti-loader-2"></i><span>Loading loans…</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" id="linkModalCancel">Cancel</button>
+      <button type="button" class="btn btn-pill" id="linkModalConfirm">Link it</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js"></script>
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/expenses.js"></script>
+</body>
+</html>

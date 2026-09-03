@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem("mpa-theme")||"dark";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<script>(function(){try{if(!localStorage.getItem("mpa-token")){window.location.replace("login.html");}else{document.documentElement.classList.add("mpa-gate");}}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Minhas Personal Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.44.0/tabler-icons.min.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/auth.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/dashboard.css">
+<link rel="stylesheet" href="css/bills.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div class="brand-text">Minhas<span>Personal Assistant</span></div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Overview</div>
+      <a href="index.html" class="nav-item active" data-page="dashboard"><i class="ti ti-layout-dashboard"></i><span>Dashboard</span></a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Money</div>
+      <a href="loans.html" class="nav-item" data-page="loans"><i class="ti ti-arrows-exchange"></i><span>Loans</span></a>
+      <a href="rent.html" class="nav-item" data-page="rent"><i class="ti ti-home-2"></i><span>Rent</span></a>
+      <a href="bills.html" class="nav-item" data-page="bills"><i class="ti ti-file-invoice"></i><span>Bills</span></a>
+      <a href="expenses.html" class="nav-item" data-page="expenses"><i class="ti ti-receipt"></i><span>Daily expenses</span></a>
+      <a href="savings.html" class="nav-item" data-page="savings"><i class="ti ti-trending-up"></i><span>Savings insights</span></a>
+      <a href="investments.html" class="nav-item" data-page="investments"><i class="ti ti-building-bank"></i><span>Investments</span></a>
+      <a href="committees.html" class="nav-item" data-page="committees"><i class="ti ti-users-group"></i><span>Committees</span></a>
+      <a href="salary.html" class="nav-item" data-page="salary"><i class="ti ti-calculator"></i><span>Salary calculator</span></a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">System</div>
+      <div class="nav-item" data-page="settings"><i class="ti ti-settings"></i><span>Settings</span></div>
+      <button type="button" class="theme-toggle-btn" id="themeToggleBtn"><i class="ti ti-sun" id="themeToggleIcon"></i><span id="themeToggleLabel">Light mode</span></button>
+    </div>
+
+    <div class="sidebar-footer">
+      Connected to <strong style="color:var(--text-secondary)">MinhasPA</strong> (MSSQL)
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h1>Dashboard</h1>
+        <div class="topbar-sub">Your whole financial picture — not a copy of the other pages.</div>
+      </div>
+      <div class="topbar-right">
+        <div class="dash-search">
+          <i class="ti ti-search"></i>
+          <input type="text" id="dashSearchInput" placeholder="Search everything…" autocomplete="off">
+          <div class="search-results" id="searchResults"></div>
+        </div>
+        <div class="month-filter">
+          <select id="dashMonth"></select>
+        </div>
+        <button type="button" class="export-btn" id="exportBtn" title="Download this month's data as a spreadsheet">
+          <i class="ti ti-download"></i> Export
+        </button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- Quick add -->
+      <div class="quickadd">
+        <form class="quickadd-form" id="quickAddForm">
+          <i class="ti ti-bolt"></i>
+          <input type="text" id="quickAddInput" placeholder="e.g. &quot;500 grocery&quot;, &quot;took 2000 from Ahmed&quot;, &quot;gave 1000 to Bilal&quot;" autocomplete="off">
+          <button type="button" class="quickadd-help" id="quickAddHelpBtn" title="How does this work?"><i class="ti ti-help-circle"></i></button>
+          <button type="submit" class="quickadd-submit">Add</button>
+        </form>
+        <div class="quickadd-examples">
+          <span class="quickadd-examples-label">Try:</span>
+          <button type="button" class="quickadd-chip" data-text="500 grocery">500 grocery</button>
+          <button type="button" class="quickadd-chip" data-text="took 2000 from Ahmed">took 2000 from Ahmed</button>
+          <button type="button" class="quickadd-chip" data-text="gave 1000 to Bilal">gave 1000 to Bilal</button>
+        </div>
+        <div class="quickadd-preview" id="quickAddPreview"></div>
+
+        <div class="quickadd-tooltip" id="quickAddTooltip">
+          <div class="quickadd-tooltip-title"><i class="ti ti-bolt"></i> How quick-add works</div>
+          <p>Type in plain English, include a number — it figures out the rest and shows a preview before you hit Add.</p>
+          <ul>
+            <li><b>An expense:</b> "500 grocery", "1200 for mobile bill" — just an amount + what it was for.</li>
+            <li><b>You borrowed:</b> "took 2000 from Ahmed", "borrowed 500 from Dad" — needs "from &lt;name&gt;".</li>
+            <li><b>You lent:</b> "gave 1000 to Bilal", "lent 300 to Hassan" — needs "to &lt;name&gt;".</li>
+          </ul>
+          <p class="quickadd-tooltip-note">Rent isn't supported here since it needs a due date — add that from the Rent page.</p>
+        </div>
+      </div>
+
+      <!-- Net position hero -->
+      <div class="panel net-hero" id="netHero"></div>
+
+      <!-- This month at a glance — Smart Sync pulled straight from Salary Calculator -->
+      <div class="panel glance-panel" id="glancePanel">
+        <div class="panel-header">
+          <div>
+            <h2><i class="ti ti-bolt" style="color:var(--accent)"></i> This month at a glance</h2>
+            <p>Loans Critical, Rent, Bills &amp; Committees — live from Salary Calculator's Smart Sync</p>
+          </div>
+          <a href="salary.html" class="panel-header-link">Salary Calculator <i class="ti ti-arrow-right"></i></a>
+        </div>
+        <div class="glance-total" id="glanceTotal"></div>
+        <div class="glance-grid" id="glanceGrid">
+          <div class="empty-state"><i class="ti ti-loader-2"></i><span>Loading…</span></div>
+        </div>
+      </div>
+
+      <!-- Headline stat cards -->
+      <div class="stat-grid" id="dashStatGrid">
+        <div class="stat-card">
+          <div class="stat-label"><i class="ti ti-arrow-down-circle" style="color:var(--danger)"></i> You owe</div>
+          <div class="stat-value negative" id="statYouOwe">—</div>
+          <div class="stat-delta">Across friends, family &amp; father's loans</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="ti ti-arrow-up-circle" style="color:var(--success)"></i> Owed to you</div>
+          <div class="stat-value positive" id="statOwedToYou">—</div>
+          <div class="stat-delta">Loans you've given out</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="ti ti-home-2" style="color:var(--accent)"></i> Rent this month</div>
+          <div class="stat-value neutral" id="statRent">—</div>
+          <div class="stat-delta" id="statRentSub">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="ti ti-receipt-2" style="color:var(--accent)"></i> Spent this month</div>
+          <div class="stat-value neutral" id="statSpent">—</div>
+          <div class="stat-delta">Mobile, meals, grocery, travel &amp; more</div>
+        </div>
+      </div>
+
+      <!-- Monthly verdict -->
+      <div class="panel verdict-card" id="verdictCard">
+        <div class="verdict-icon"><i class="ti ti-sparkles"></i></div>
+        <div class="verdict-text" id="verdictText">Crunching this month's numbers…</div>
+      </div>
+
+      <!-- Cash-flow trend — professional animated SVG histogram + trend line -->
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Cash-flow trend</h2>
+            <p>What you spent each month — rent + everyday expenses, last 6 months</p>
+          </div>
+        </div>
+        <div class="trend-bars" id="trendBars"></div>
+      </div>
+
+      <!-- Action center + People overview -->
+      <div class="panel-grid">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Action center</h2>
+              <p>What's actually urgent — due in 3 days, overdue, or over budget</p>
+            </div>
+          </div>
+          <div class="alerts-list" id="alertsList">
+            <div class="empty-state"><i class="ti ti-loader-2"></i><span>Loading…</span></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Bills due</h2>
+              <p>Pending bills, soonest due date first</p>
+            </div>
+            <a href="bills.html" class="panel-header-link">Manage <i class="ti ti-arrow-right"></i></a>
+          </div>
+          <div class="bills-due-list" id="billsDueList">
+            <div class="empty-state"><i class="ti ti-loader-2"></i><span>Loading…</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Budgets + Calendar -->
+      <div class="panel-grid">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Budget goals</h2>
+              <p>Set a monthly limit per category</p>
+            </div>
+          </div>
+          <div class="budget-list" id="budgetList"></div>
+          <form class="budget-add-form" id="budgetAddForm">
+            <select id="budgetCategory"></select>
+            <input type="number" id="budgetLimit" placeholder="Rs limit" min="1" step="1" required>
+            <button type="submit"><i class="ti ti-plus" style="font-size:13px"></i></button>
+          </form>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Financial calendar</h2>
+              <p>Due dates this month</p>
+            </div>
+          </div>
+          <div class="calendar-header-row">
+            <span class="calendar-month-label" id="calMonthLabel">—</span>
+            <div class="calendar-nav">
+              <button type="button" id="calPrev"><i class="ti ti-chevron-left"></i></button>
+              <button type="button" id="calNext"><i class="ti ti-chevron-right"></i></button>
+            </div>
+          </div>
+          <div class="calendar-grid" id="calGrid"></div>
+          <div class="calendar-forecast" id="calForecast" style="display:none">
+            <i class="ti ti-alarm"></i>
+            <span id="calForecastText"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent activity -->
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Recent activity</h2>
+            <p>Latest entries across loans, expenses &amp; rent</p>
+          </div>
+        </div>
+        <div class="activity-list" id="activityList">
+          <div class="empty-state"><i class="ti ti-loader-2"></i><span>Loading…</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>

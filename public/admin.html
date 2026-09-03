@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem("mpa-theme")||"dark";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<script>(function(){try{if(!localStorage.getItem("mpa-token")){window.location.replace("login.html");}else{document.documentElement.classList.add("mpa-gate");}}catch(e){}})();</script>
+<script>(function(){
+  // Admin-only page — bounce anyone who isn't a super_admin straight to the dashboard.
+  try{
+    var u = JSON.parse(localStorage.getItem("mpa-user") || "null");
+    if (!u || u.role !== "super_admin") { window.location.replace("index.html"); }
+  }catch(e){ window.location.replace("index.html"); }
+})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Minhas Personal Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.44.0/tabler-icons.min.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/auth.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div class="brand-text">Minhas<span>Personal Assistant</span></div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Overview</div>
+      <a href="index.html" class="nav-item" data-page="dashboard"><i class="ti ti-layout-dashboard"></i><span>Dashboard</span></a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Money</div>
+      <a href="loans.html" class="nav-item" data-page="loans"><i class="ti ti-arrows-exchange"></i><span>Loans</span></a>
+      <a href="rent.html" class="nav-item" data-page="rent"><i class="ti ti-home-2"></i><span>Rent</span></a>
+      <a href="bills.html" class="nav-item" data-page="bills"><i class="ti ti-file-invoice"></i><span>Bills</span></a>
+      <a href="expenses.html" class="nav-item" data-page="expenses"><i class="ti ti-receipt"></i><span>Daily expenses</span></a>
+      <a href="savings.html" class="nav-item" data-page="savings"><i class="ti ti-trending-up"></i><span>Savings insights</span></a>
+      <a href="investments.html" class="nav-item" data-page="investments"><i class="ti ti-building-bank"></i><span>Investments</span></a>
+      <a href="committees.html" class="nav-item" data-page="committees"><i class="ti ti-users-group"></i><span>Committees</span></a>
+      <a href="salary.html" class="nav-item" data-page="salary"><i class="ti ti-calculator"></i><span>Salary calculator</span></a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">System</div>
+      <a href="admin.html" class="nav-item active" data-page="admin"><i class="ti ti-shield-lock"></i><span>Admin</span></a>
+      <div class="nav-item" data-page="settings"><i class="ti ti-settings"></i><span>Settings</span></div>
+      <button type="button" class="theme-toggle-btn" id="themeToggleBtn"><i class="ti ti-sun" id="themeToggleIcon"></i><span id="themeToggleLabel">Light mode</span></button>
+    </div>
+
+    <div class="sidebar-footer">
+      Connected to <strong style="color:var(--text-secondary)">MinhasPA</strong> (MSSQL)
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h1>Admin</h1>
+        <div class="topbar-sub">Manage every account on this app — plans, roles, and which features each person can use.</div>
+      </div>
+      <div class="topbar-right"></div>
+    </div>
+
+    <div class="content">
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-label"><i class="ti ti-users" style="color:var(--accent)"></i> Total users</div>
+          <div class="stat-value neutral" id="statTotal">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="ti ti-user-check" style="color:var(--success)"></i> Active</div>
+          <div class="stat-value neutral" id="statActive">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="ti ti-crown" style="color:var(--accent)"></i> Premium</div>
+          <div class="stat-value neutral" id="statPremium">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="ti ti-shield-lock" style="color:var(--accent)"></i> Admins</div>
+          <div class="stat-value neutral" id="statAdmins">0</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="table-scroll loans-scroll">
+          <table class="loans-table admin-table" id="usersTable">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Role</th>
+                <th>Plan</th>
+                <th>Status</th>
+                <th>Features</th>
+                <th>Joined</th>
+                <th>Last login</th>
+              </tr>
+            </thead>
+            <tbody id="usersBody">
+              <tr><td colspan="7"><div class="empty-state"><i class="ti ti-loader-2"></i><span>Loading users…</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Feature toggle popover -->
+<div class="modal-overlay" id="featureModalOverlay">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <h3 id="featureModalTitle">Feature access</h3>
+      <button class="modal-close" id="featureModalClose"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="feature-toggle-list" id="featureToggleList"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" id="featureCancelBtn">Cancel</button>
+      <button type="button" class="btn btn-pill" id="featureSaveBtn">Save</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

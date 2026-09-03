@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem("mpa-theme")||"dark";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<script>(function(){try{if(!localStorage.getItem("mpa-token")){window.location.replace("login.html");}else{document.documentElement.classList.add("mpa-gate");}}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rent — Minhas Personal Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.44.0/tabler-icons.min.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/auth.css">
+<link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div class="brand-text">Minhas<span>Personal Assistant</span></div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Overview</div>
+      <a href="index.html" class="nav-item" data-page="dashboard"><i class="ti ti-layout-dashboard"></i><span>Dashboard</span></a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Money</div>
+      <a href="loans.html" class="nav-item" data-page="loans"><i class="ti ti-arrows-exchange"></i><span>Loans</span></a>
+      <a href="rent.html" class="nav-item active" data-page="rent"><i class="ti ti-home-2"></i><span>Rent</span></a>
+      <a href="bills.html" class="nav-item" data-page="bills"><i class="ti ti-file-invoice"></i><span>Bills</span></a>
+      <a href="expenses.html" class="nav-item" data-page="expenses"><i class="ti ti-receipt"></i><span>Daily expenses</span></a>
+      <a href="savings.html" class="nav-item" data-page="savings"><i class="ti ti-trending-up"></i><span>Savings insights</span></a>
+      <a href="investments.html" class="nav-item" data-page="investments"><i class="ti ti-building-bank"></i><span>Investments</span></a>
+      <a href="committees.html" class="nav-item" data-page="committees"><i class="ti ti-users-group"></i><span>Committees</span></a>
+      <a href="salary.html" class="nav-item" data-page="salary"><i class="ti ti-calculator"></i><span>Salary calculator</span></a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">System</div>
+      <div class="nav-item" data-page="settings"><i class="ti ti-settings"></i><span>Settings</span></div>
+      <button type="button" class="theme-toggle-btn" id="themeToggleBtn"><i class="ti ti-sun" id="themeToggleIcon"></i><span id="themeToggleLabel">Light mode</span></button>
+    </div>
+
+    <div class="sidebar-footer">
+      Connected to <strong style="color:var(--text-secondary)">MinhasPA</strong> (MSSQL)
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h1>Rent</h1>
+        <div class="topbar-sub">Your room rent, tracked month by month.</div>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-primary" id="addRentBtn"><i class="ti ti-plus" style="font-size:15px"></i> Record a month</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <div class="stat-grid stat-grid-3">
+        <div class="stat-card">
+          <div class="stat-label"><i class="ti ti-calendar-event" style="color:var(--accent)"></i> This month</div>
+          <div class="stat-value neutral" id="thisMonthStatus">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="ti ti-checks" style="color:var(--success)"></i> Paid this year</div>
+          <div class="stat-value positive" id="paidThisYear">Rs 0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="ti ti-alert-circle" style="color:var(--danger)"></i> Unpaid months</div>
+          <div class="stat-value negative" id="unpaidCount">0</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="table-scroll">
+          <table class="loans-table">
+            <thead>
+              <tr>
+                <th>Month</th>
+                <th>Amount</th>
+                <th>Due date</th>
+                <th>Status</th>
+                <th>Paid on</th>
+                <th>Paid by</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="rentBody">
+              <tr><td colspan="7"><div class="empty-state"><i class="ti ti-loader-2"></i><span>Loading rent history…</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">Record a month's rent</h3>
+      <button class="modal-close" id="modalClose"><i class="ti ti-x"></i></button>
+    </div>
+    <form id="rentForm">
+      <input type="hidden" id="rentId">
+
+      <div class="form-row">
+        <label for="monthYear">Month</label>
+        <input type="month" id="monthYear" required>
+      </div>
+
+      <div class="form-row two-col">
+        <div>
+          <label for="amount">Amount (Rs)</label>
+          <input type="number" id="amount" step="0.01" min="0" required>
+        </div>
+        <div>
+          <label for="status">Status</label>
+          <select id="status">
+            <option value="unpaid">Unpaid</option>
+            <option value="paid">Paid</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label for="dueDate">Due date</label>
+        <input type="date" id="dueDate" required>
+      </div>
+
+      <div class="form-row two-col" id="paidDateWrap" style="display:none">
+        <div>
+          <label for="paidDate">Paid on</label>
+          <input type="date" id="paidDate">
+        </div>
+      </div>
+
+      <div class="form-row two-col">
+        <div>
+          <label for="paidBy">Rent paid by</label>
+          <select id="paidBy">
+            <option value="me">Me</option>
+            <option value="loan">Loan</option>
+          </select>
+        </div>
+        <div id="loanNameWrap" style="display:none">
+          <label for="loanName">Loan name</label>
+          <input type="text" id="loanName" placeholder="e.g. Father, Ahmed loan — press Enter">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label for="notes">Notes (optional)</label>
+        <input type="text" id="notes" placeholder="e.g. paid via bank transfer">
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="cancelBtn">Cancel</button>
+        <button type="submit" class="btn btn-pill">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/rent.js"></script>
+</body>
+</html>

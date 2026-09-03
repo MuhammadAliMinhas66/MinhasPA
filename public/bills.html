@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem("mpa-theme")||"dark";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<script>(function(){try{if(!localStorage.getItem("mpa-token")){window.location.replace("login.html");}else{document.documentElement.classList.add("mpa-gate");}}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bills — Minhas Personal Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.44.0/tabler-icons.min.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/auth.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/bills.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div class="brand-text">Minhas<span>Personal Assistant</span></div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Overview</div>
+      <a href="index.html" class="nav-item" data-page="dashboard"><i class="ti ti-layout-dashboard"></i><span>Dashboard</span></a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Money</div>
+      <a href="loans.html" class="nav-item" data-page="loans"><i class="ti ti-arrows-exchange"></i><span>Loans</span></a>
+      <a href="rent.html" class="nav-item" data-page="rent"><i class="ti ti-home-2"></i><span>Rent</span></a>
+      <a href="bills.html" class="nav-item active" data-page="bills"><i class="ti ti-file-invoice"></i><span>Bills</span></a>
+      <a href="expenses.html" class="nav-item" data-page="expenses"><i class="ti ti-receipt"></i><span>Daily expenses</span></a>
+      <a href="savings.html" class="nav-item" data-page="savings"><i class="ti ti-trending-up"></i><span>Savings insights</span></a>
+      <a href="investments.html" class="nav-item" data-page="investments"><i class="ti ti-building-bank"></i><span>Investments</span></a>
+      <a href="committees.html" class="nav-item" data-page="committees"><i class="ti ti-users-group"></i><span>Committees</span></a>
+      <a href="salary.html" class="nav-item" data-page="salary"><i class="ti ti-calculator"></i><span>Salary calculator</span></a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">System</div>
+      <div class="nav-item" data-page="settings"><i class="ti ti-settings"></i><span>Settings</span></div>
+      <button type="button" class="theme-toggle-btn" id="themeToggleBtn"><i class="ti ti-sun" id="themeToggleIcon"></i><span id="themeToggleLabel">Light mode</span></button>
+    </div>
+
+    <div class="sidebar-footer">
+      Connected to <strong style="color:var(--text-secondary)">MinhasPA</strong> (MSSQL)
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h1>Bills</h1>
+        <div class="topbar-sub">Electricity, internet, and everything else you pay someone every month.</div>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-primary" id="addBillBtn"><i class="ti ti-plus" style="font-size:15px"></i> Add a bill</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <div class="stat-grid stat-grid-3">
+        <div class="stat-card">
+          <div class="stat-label"><i class="ti ti-hourglass" style="color:var(--warning)"></i> Pending this month</div>
+          <div class="stat-value neutral" id="statPendingCount">—</div>
+          <div class="stat-delta" id="statPendingAmt">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="ti ti-checks" style="color:var(--success)"></i> Paid this month</div>
+          <div class="stat-value positive" id="statPaidAmt">Rs 0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="ti ti-alert-circle" style="color:var(--danger)"></i> Overdue</div>
+          <div class="stat-value negative" id="statOverdueCount">0</div>
+        </div>
+      </div>
+
+      <!-- Pending bills — always shown at the top of the list until paid -->
+      <div class="panel bills-pending-panel">
+        <div class="panel-header">
+          <div>
+            <h2>Pending bills</h2>
+            <p>Everything due this month, soonest first — mark paid as you go</p>
+          </div>
+        </div>
+        <div id="pendingBillsList">
+          <div class="empty-state"><i class="ti ti-loader-2"></i><span>Loading pending bills…</span></div>
+        </div>
+      </div>
+
+      <!-- All recurring bills -->
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Your bills</h2>
+            <p>Every recurring biller you're tracking</p>
+          </div>
+        </div>
+
+        <div class="bill-cat-filter" id="billCatFilter"></div>
+
+        <div class="bills-grid" id="billsGrid">
+          <div class="empty-state"><i class="ti ti-loader-2"></i><span>Loading bills…</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===== Add / Edit bill modal ===== -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">Add a bill</h3>
+      <button class="modal-close" id="modalClose"><i class="ti ti-x"></i></button>
+    </div>
+    <form id="billForm">
+      <input type="hidden" id="billId">
+
+      <div class="form-row">
+        <label for="billCategory">Bill type</label>
+        <select id="billCategory" required>
+          <option value="__loading__">Loading categories…</option>
+        </select>
+      </div>
+
+      <div class="new-cat-box" id="newCatBox">
+        <div class="new-cat-row">
+          <label for="newCatLabel">New bill type</label>
+          <input type="text" id="newCatLabel" placeholder="e.g. Gas, Water, Streaming">
+        </div>
+        <div class="new-cat-preview">
+          <span class="new-cat-preview-icon" id="newCatPreviewIcon"><i class="ti ti-file-invoice"></i></span>
+          <span id="newCatPreviewLabel">Your new bill type</span>
+          <span class="new-cat-preview-hint">Icon &amp; colour matched automatically</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label for="billerName">Biller name</label>
+        <input type="text" id="billerName" placeholder="e.g. K-Electric, PTCL, StormFiber" required>
+      </div>
+
+      <div class="form-row two-col">
+        <div>
+          <label for="dueDay">Due date every month</label>
+          <input type="number" id="dueDay" min="1" max="31" placeholder="e.g. 15" required>
+        </div>
+        <div>
+          <label for="defaultAmount" id="defaultAmountLabel">First month charges (optional)</label>
+          <input type="number" id="defaultAmount" step="0.01" min="0" placeholder="If you already know it">
+        </div>
+      </div>
+
+      <label class="fixed-amount-toggle" for="isFixedAmount">
+        <input type="checkbox" id="isFixedAmount">
+        <span class="fixed-amount-switch"></span>
+        <span class="fixed-amount-text">
+          <strong>Same bill every month</strong>
+          <small>Amount above is repeated automatically each month instead of coming up blank</small>
+        </span>
+      </label>
+
+      <div class="form-row">
+        <label for="billNotes">Notes (optional)</label>
+        <input type="text" id="billNotes" placeholder="e.g. account #, connection details">
+      </div>
+
+      <!-- Credentials — fully encrypted, collapsed by default -->
+      <div class="cred-section">
+        <div class="cred-section-header" id="credSectionHeader">
+          <span class="cred-section-title"><i class="ti ti-lock"></i> Credentials (optional)</span>
+          <i class="ti ti-chevron-down cred-toggle-chevron"></i>
+        </div>
+        <div class="cred-lock-note"><i class="ti ti-shield-lock"></i> Stored fully encrypted — never shown in plain text unless you open it</div>
+
+        <div class="cred-section-body" id="credSectionBody">
+          <div class="form-row two-col">
+            <div>
+              <label for="givenEmail">Email given to them</label>
+              <input type="email" id="givenEmail" placeholder="email on record">
+            </div>
+            <div>
+              <label for="givenPhone">Phone given to them</label>
+              <input type="text" id="givenPhone" placeholder="phone on record">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label for="givenDate">Date connection was given</label>
+            <input type="date" id="givenDate">
+          </div>
+
+          <div class="form-row two-col">
+            <div>
+              <label for="portalEmail">Portal login email/username</label>
+              <input type="text" id="portalEmail" placeholder="if the biller has an online portal">
+            </div>
+            <div>
+              <label for="portalPhone">Portal login phone</label>
+              <input type="text" id="portalPhone" placeholder="if login is by phone">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label for="portalPassword">Portal password</label>
+            <div class="pw-field-wrap">
+              <input type="password" id="portalPassword" placeholder="portal password">
+              <button type="button" class="pw-toggle" id="portalPwToggle" title="Show/hide"><i class="ti ti-eye"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="cancelBtn">Cancel</button>
+        <button type="submit" class="btn btn-pill">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== Mark as paid modal ===== -->
+<div class="modal-overlay" id="payModalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Mark bill as paid</h3>
+      <button class="modal-close" id="payModalClose"><i class="ti ti-x"></i></button>
+    </div>
+    <form id="payForm">
+      <input type="hidden" id="payPaymentId">
+
+      <div class="form-row two-col">
+        <div>
+          <label for="payAmount">Bill amount (Rs)</label>
+          <input type="number" id="payAmount" step="0.01" min="0" required>
+        </div>
+        <div>
+          <label for="payExtra">Extra charges (Rs)</label>
+          <input type="number" id="payExtra" step="0.01" min="0" placeholder="late fee, if any">
+        </div>
+      </div>
+
+      <div class="form-row two-col">
+        <div>
+          <label for="paidOn">Paid on</label>
+          <input type="date" id="paidOn" required>
+        </div>
+        <div>
+          <label for="paidThrough">Paid through</label>
+          <input type="text" id="paidThrough" placeholder="e.g. JazzCash, bank transfer, cash">
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="payCancelBtn">Cancel</button>
+        <button type="submit" class="btn btn-pill">Mark paid</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== View credentials modal ===== -->
+<div class="modal-overlay" id="credModalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3><i class="ti ti-lock" style="margin-right:6px;color:var(--accent)"></i> Credentials</h3>
+      <button class="modal-close" id="credModalClose"><i class="ti ti-x"></i></button>
+    </div>
+    <div id="credModalBody">
+      <div class="empty-state"><i class="ti ti-loader-2"></i><span>Decrypting…</span></div>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" id="credCloseBtn">Close</button>
+      <button type="button" class="btn btn-pill" id="credEditBtn">Edit credentials</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Payment history modal ===== -->
+<div class="modal-overlay" id="historyModalOverlay">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-header">
+      <h3 id="historyModalTitle">Payment history</h3>
+      <button class="modal-close" id="historyModalClose"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="table-scroll" style="max-height:420px;overflow-y:auto">
+      <table class="loans-table">
+        <thead>
+          <tr>
+            <th>Month</th>
+            <th>Amount</th>
+            <th>Extra</th>
+            <th>Total</th>
+            <th>Due</th>
+            <th>Status</th>
+            <th>Paid on</th>
+            <th>Through</th>
+          </tr>
+        </thead>
+        <tbody id="historyBody"></tbody>
+      </table>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" id="historyCloseBtn">Close</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/bills.js"></script>
+</body>
+</html>

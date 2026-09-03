@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem("mpa-theme")||"dark";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<script>(function(){try{if(!localStorage.getItem("mpa-token")){window.location.replace("login.html");}else{document.documentElement.classList.add("mpa-gate");}}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Savings insights — Minhas Personal Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.44.0/tabler-icons.min.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/auth.css">
+<link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div class="brand-text">Minhas<span>Personal Assistant</span></div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Overview</div>
+      <a href="index.html" class="nav-item" data-page="dashboard"><i class="ti ti-layout-dashboard"></i><span>Dashboard</span></a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Money</div>
+      <a href="loans.html" class="nav-item" data-page="loans"><i class="ti ti-arrows-exchange"></i><span>Loans</span></a>
+      <a href="rent.html" class="nav-item" data-page="rent"><i class="ti ti-home-2"></i><span>Rent</span></a>
+      <a href="bills.html" class="nav-item" data-page="bills"><i class="ti ti-file-invoice"></i><span>Bills</span></a>
+      <a href="expenses.html" class="nav-item" data-page="expenses"><i class="ti ti-receipt"></i><span>Daily expenses</span></a>
+      <a href="savings.html" class="nav-item active" data-page="savings"><i class="ti ti-trending-up"></i><span>Savings insights</span></a>
+      <a href="investments.html" class="nav-item" data-page="investments"><i class="ti ti-building-bank"></i><span>Investments</span></a>
+      <a href="committees.html" class="nav-item" data-page="committees"><i class="ti ti-users-group"></i><span>Committees</span></a>
+      <a href="salary.html" class="nav-item" data-page="salary"><i class="ti ti-calculator"></i><span>Salary calculator</span></a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">System</div>
+      <div class="nav-item" data-page="settings"><i class="ti ti-settings"></i><span>Settings</span></div>
+      <button type="button" class="theme-toggle-btn" id="themeToggleBtn"><i class="ti ti-sun" id="themeToggleIcon"></i><span id="themeToggleLabel">Light mode</span></button>
+    </div>
+
+    <div class="sidebar-footer">
+      Connected to <strong style="color:var(--text-secondary)">MinhasPA</strong> (MSSQL)
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h1>Savings insights</h1>
+        <div class="topbar-sub">This month's picture, compared to last month, with real suggestions.</div>
+      </div>
+      <div class="topbar-right">
+        <div class="income-input">
+          <span>Rs</span>
+          <input type="number" id="incomeInput" placeholder="Monthly income" min="0">
+          <button class="btn btn-primary" id="saveIncomeBtn">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-label"><i class="ti ti-wallet" style="color:var(--accent)"></i> Monthly income</div>
+          <div class="stat-value neutral" id="statIncome">Rs 0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="ti ti-arrow-down-circle" style="color:var(--danger)"></i> Obligations this month</div>
+          <div class="stat-value negative" id="statObligations">Rs 0</div>
+          <div class="stat-delta">Rent + due loans + spend so far</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="ti ti-moneybag" style="color:var(--success)"></i> Estimated savings</div>
+          <div class="stat-value positive" id="statSavings">Rs 0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="ti ti-percentage" style="color:var(--accent)"></i> Savings rate</div>
+          <div class="stat-value neutral" id="statRate">0%</div>
+        </div>
+      </div>
+
+      <div class="panel-grid">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Spending: this month vs last</h2>
+              <p>By category</p>
+            </div>
+          </div>
+          <div style="position:relative;height:280px">
+            <canvas id="trendChart"></canvas>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Suggestions</h2>
+              <p>Based on your actual data</p>
+            </div>
+          </div>
+          <div id="suggestionsList" class="suggestions-list">
+            <div class="empty-state"><i class="ti ti-loader-2"></i><span>Crunching the numbers…</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Critical &amp; upcoming</h2>
+            <p>Loans and rent that need attention soon</p>
+          </div>
+        </div>
+        <div id="criticalList"></div>
+      </div>
+
+      <!-- ===== My Savings — real, tracked total ===== -->
+      <div class="section-divider-heading">
+        <i class="ti ti-moneybag"></i>
+        <span>My Savings</span>
+        <p>What you've actually set aside, month by month</p>
+      </div>
+
+      <div class="savings-hero">
+        <div class="savings-hero-main">
+          <span class="savings-hero-label">Total saved, all-time</span>
+          <span class="savings-hero-value" id="statActualSavings">Rs 0</span>
+        </div>
+        <div class="savings-hero-chart" id="savingsMiniChart"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Savings log</h2>
+            <p>Add what you actually set aside for a month</p>
+          </div>
+        </div>
+        <form class="savings-add-form" id="savingsAddForm">
+          <input type="month" id="savingsMonth" required>
+          <input type="number" id="savingsAmount" placeholder="Rs amount" min="1" step="1" required>
+          <input type="text" id="savingsNote" placeholder="Note (optional)">
+          <button type="submit"><i class="ti ti-plus"></i> Add</button>
+        </form>
+        <div class="savings-entry-list" id="savingsEntryList"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js"></script>
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/savings.js"></script>
+</body>
+</html>

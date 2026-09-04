@@ -17,7 +17,7 @@
 .inline-select.role-super_admin{color:var(--accent-hover);font-weight:600;}
 .inline-select.plan-premium{color:var(--accent-hover);font-weight:600;}
 
-/* ---- Active/disabled toggle switch ---- */
+/* ---- Toggle switch (still used by the per-feature access popover) ---- */
 .status-toggle{
   display:inline-flex;
   align-items:center;
@@ -45,6 +45,116 @@
 .status-toggle input:checked + .toggle-track{background:var(--success);}
 .status-toggle input:checked + .toggle-track::after{transform:translateX(16px);}
 .status-toggle-label{font-size:12px;color:var(--text-secondary);}
+
+/* ---- Activity status (derived from the activity log, not a manual switch) ---- */
+.activity-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-size:12px;
+  font-weight:500;
+  padding:4px 10px;
+  border-radius:999px;
+}
+.activity-badge i{font-size:9px;}
+.activity-badge.live{background:var(--success-dim);color:var(--success);}
+.activity-badge.live i{color:var(--success);animation:pulseDot 1.6s ease-in-out infinite;}
+.activity-badge.idle{background:var(--surface-2);color:var(--text-secondary);border:1px solid var(--border-strong);}
+.activity-badge.idle i{font-size:13px;}
+.activity-badge.none{background:var(--surface-2);color:var(--text-tertiary,var(--text-secondary));border:1px solid var(--border);}
+.activity-badge.none i{font-size:13px;}
+@keyframes pulseDot{
+  0%,100%{opacity:1;}
+  50%{opacity:0.35;}
+}
+.entries-count{
+  font-size:11px;
+  color:var(--text-tertiary,var(--text-secondary));
+  margin-top:5px;
+}
+
+/* ---- Per-row admin actions (edit / reset password / delete) ---- */
+.row-actions{display:flex;gap:6px;}
+.icon-btn{
+  width:30px;height:30px;
+  display:inline-flex;align-items:center;justify-content:center;
+  background:var(--surface);
+  border:1px solid var(--border-strong);
+  color:var(--text-secondary);
+  border-radius:8px;
+  cursor:pointer;
+  transition:all 0.15s ease;
+}
+.icon-btn:hover{border-color:var(--accent);color:var(--accent-hover);}
+.icon-btn:disabled{opacity:0.4;cursor:not-allowed;}
+.icon-btn-danger:hover{border-color:var(--danger);color:var(--danger);}
+
+.btn-danger{
+  background:var(--danger);
+  color:#fff;
+  padding:10px 18px;
+  border-radius:var(--radius,8px);
+}
+.btn-danger:hover{background:var(--danger-hover,var(--danger));filter:brightness(1.1);}
+
+.generated-pw-box{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  background:var(--surface-2);
+  border:1px solid var(--border-strong);
+  border-radius:10px;
+  padding:12px 14px;
+  margin-top:10px;
+}
+.generated-pw-box code{
+  font-family:var(--font-mono, monospace);
+  font-size:14px;
+  color:var(--accent-hover);
+  word-break:break-all;
+}
+.log-hint{font-size:12.5px;color:var(--text-secondary);line-height:1.5;margin-bottom:4px;}
+
+/* ---- Users / Activity log tab switch ---- */
+.admin-view-tabs{
+  max-width:320px;
+  margin-bottom:18px;
+}
+
+/* ---- Activity log panel ---- */
+.log-filters{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-bottom:16px;
+}
+.action-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-size:12px;
+  font-weight:500;
+  padding:4px 10px;
+  border-radius:999px;
+}
+.action-badge.action-create{background:var(--success-dim);color:var(--success);}
+.action-badge.action-update{background:var(--accent-dim);color:var(--accent-hover);}
+.action-badge.action-delete{background:var(--danger-dim);color:var(--danger);}
+.log-summary{
+  font-size:12.5px;
+  color:var(--text-secondary);
+  max-width:320px;
+  white-space:normal;
+}
+.log-pager{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:16px;
+  margin-top:16px;
+}
+.log-page-label{font-size:12.5px;color:var(--text-secondary);}
 
 /* ---- "Features" cell — shows a count + opens the popover ---- */
 .features-btn{
@@ -102,5 +212,5 @@
 }
 
 @media (max-width: 900px){
-  .admin-table{min-width:900px;}
+  .admin-table{min-width:1040px;}
 }

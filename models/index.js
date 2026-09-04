@@ -6,6 +6,7 @@
 // COLLECTION" step; Mongo creates it on first insert.
 module.exports = {
   User: require('./User'),
+  ActivityLog: require('./ActivityLog'),
   Loan: require('./Loan'),
   Rent: require('./Rent'),
   Expense: require('./Expense'),

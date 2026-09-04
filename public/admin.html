@@ -64,7 +64,7 @@
     <div class="topbar">
       <div>
         <h1>Admin</h1>
-        <div class="topbar-sub">Manage every account on this app — plans, roles, and which features each person can use.</div>
+        <div class="topbar-sub">Manage every account on this app — plans, roles, access, and what each person is actually doing.</div>
       </div>
       <div class="topbar-right"></div>
     </div>
@@ -77,7 +77,7 @@
           <div class="stat-value neutral" id="statTotal">0</div>
         </div>
         <div class="stat-card">
-          <div class="stat-label"><i class="ti ti-user-check" style="color:var(--success)"></i> Active</div>
+          <div class="stat-label"><i class="ti ti-user-check" style="color:var(--success)"></i> Active now</div>
           <div class="stat-value neutral" id="statActive">0</div>
         </div>
         <div class="stat-card">
@@ -90,7 +90,16 @@
         </div>
       </div>
 
-      <div class="panel">
+      <div class="segmented admin-view-tabs">
+        <button type="button" class="seg-btn active" id="tabUsersBtn" onclick="switchAdminView('users')">
+          <i class="ti ti-users"></i> Users
+        </button>
+        <button type="button" class="seg-btn" id="tabLogsBtn" onclick="switchAdminView('logs')">
+          <i class="ti ti-history"></i> Activity log
+        </button>
+      </div>
+
+      <div class="panel" id="usersView">
         <div class="table-scroll loans-scroll">
           <table class="loans-table admin-table" id="usersTable">
             <thead>
@@ -98,16 +107,56 @@
                 <th>User</th>
                 <th>Role</th>
                 <th>Plan</th>
-                <th>Status</th>
+                <th>Activity</th>
                 <th>Features</th>
                 <th>Joined</th>
                 <th>Last login</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody id="usersBody">
-              <tr><td colspan="7"><div class="empty-state"><i class="ti ti-loader-2"></i><span>Loading users…</span></div></td></tr>
+              <tr><td colspan="8"><div class="empty-state"><i class="ti ti-loader-2"></i><span>Loading users…</span></div></td></tr>
             </tbody>
           </table>
+        </div>
+      </div>
+
+      <div class="panel" id="logsView" style="display:none">
+        <div class="log-filters">
+          <select id="logUserFilter" class="inline-select">
+            <option value="">All users</option>
+          </select>
+          <select id="logResourceFilter" class="inline-select">
+            <option value="">All areas</option>
+          </select>
+          <select id="logActionFilter" class="inline-select">
+            <option value="">All actions</option>
+            <option value="create">Added</option>
+            <option value="update">Edited</option>
+            <option value="delete">Deleted</option>
+          </select>
+          <button type="button" class="btn btn-ghost" id="logRefreshBtn"><i class="ti ti-refresh"></i> Refresh</button>
+        </div>
+        <div class="table-scroll loans-scroll">
+          <table class="loans-table admin-table" id="logsTable">
+            <thead>
+              <tr>
+                <th>When</th>
+                <th>User</th>
+                <th>Action</th>
+                <th>Area</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody id="logsBody">
+              <tr><td colspan="5"><div class="empty-state"><i class="ti ti-loader-2"></i><span>Loading activity…</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="log-pager">
+          <button type="button" class="btn btn-ghost" id="logPrevBtn"><i class="ti ti-chevron-left"></i> Newer</button>
+          <span id="logPageLabel" class="log-page-label"></span>
+          <button type="button" class="btn btn-ghost" id="logNextBtn">Older <i class="ti ti-chevron-right"></i></button>
         </div>
       </div>
 
@@ -126,6 +175,84 @@
     <div class="modal-actions">
       <button type="button" class="btn btn-ghost" id="featureCancelBtn">Cancel</button>
       <button type="button" class="btn btn-pill" id="featureSaveBtn">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit user modal -->
+<div class="modal-overlay" id="editUserModalOverlay">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <h3 id="editUserModalTitle">Edit user</h3>
+      <button class="modal-close" id="editUserModalClose"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="form-row">
+      <label for="editFullName">Full name</label>
+      <input type="text" id="editFullName" maxlength="80">
+    </div>
+    <div class="form-row">
+      <label for="editUsername">Username</label>
+      <input type="text" id="editUsername" maxlength="40">
+    </div>
+    <div class="form-row">
+      <label for="editEmail">Email</label>
+      <input type="email" id="editEmail" maxlength="120">
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" id="editUserCancelBtn">Cancel</button>
+      <button type="button" class="btn btn-pill" id="editUserSaveBtn"><i class="ti ti-device-floppy"></i> Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reset password modal -->
+<div class="modal-overlay" id="resetPwModalOverlay">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <h3 id="resetPwModalTitle">Reset password</h3>
+      <button class="modal-close" id="resetPwModalClose"><i class="ti ti-x"></i></button>
+    </div>
+
+    <div id="resetPwForm">
+      <div class="segmented" style="margin-bottom:16px">
+        <button type="button" class="seg-btn active" id="resetPwGenBtn" onclick="setResetPwMode('generate')">Generate one</button>
+        <button type="button" class="seg-btn" id="resetPwManualBtn" onclick="setResetPwMode('manual')">Set manually</button>
+      </div>
+      <div class="form-row" id="resetPwManualRow" style="display:none">
+        <label for="resetPwInput">New password</label>
+        <input type="password" id="resetPwInput" minlength="8" placeholder="At least 8 characters">
+      </div>
+      <p class="log-hint" id="resetPwHint">A strong random password will be generated and shown once — copy it and send it to the user securely.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="resetPwCancelBtn">Cancel</button>
+        <button type="button" class="btn btn-pill" id="resetPwConfirmBtn"><i class="ti ti-key"></i> Reset password</button>
+      </div>
+    </div>
+
+    <div id="resetPwResult" style="display:none">
+      <p class="log-hint">Share this password with the user now — it will not be shown again.</p>
+      <div class="generated-pw-box">
+        <code id="resetPwGenerated"></code>
+        <button type="button" class="btn btn-ghost" id="resetPwCopyBtn"><i class="ti ti-copy"></i> Copy</button>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-pill" id="resetPwDoneBtn">Done</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete user confirmation modal -->
+<div class="modal-overlay" id="deleteUserModalOverlay">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <h3><i class="ti ti-alert-triangle" style="color:var(--danger)"></i> Delete user</h3>
+      <button class="modal-close" id="deleteUserModalClose"><i class="ti ti-x"></i></button>
+    </div>
+    <p id="deleteUserMessage" class="log-hint"></p>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" id="deleteUserCancelBtn">Cancel</button>
+      <button type="button" class="btn btn-danger" id="deleteUserConfirmBtn"><i class="ti ti-trash"></i> Delete permanently</button>
     </div>
   </div>
 </div>

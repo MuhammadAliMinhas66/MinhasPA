@@ -8,9 +8,9 @@ const { requirePremium } = require('./middleware/requirePremium');
 const { requireAdmin } = require('./middleware/requireAdmin');
 const { checkUserStatus } = require('./middleware/checkUserStatus');
 const { requireFeature } = require('./middleware/requireFeature');
+const { activityLogger } = require('./middleware/activityLogger');
 
 const app = express();
-app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3000;
 
 if (!process.env.JWT_SECRET) {
@@ -44,7 +44,10 @@ app.use('/api/auth', require('./routes/auth'));
 // checkUserStatus also blocks disabled accounts and loads this user's
 // per-feature toggles fresh on every request (not baked into the JWT), so
 // admin changes take effect immediately without the user re-logging in.
-app.use('/api', requireAuth, checkUserStatus);
+// activityLogger sits right after checkUserStatus so it runs on every
+// authenticated request from here down — every POST/PUT/PATCH/DELETE,
+// across every feature route AND the admin routes, gets recorded.
+app.use('/api', requireAuth, checkUserStatus, activityLogger);
 
 // Admin dashboard — super_admin only
 app.use('/api/admin', requireAdmin, require('./routes/admin'));

@@ -18,7 +18,7 @@ async function checkUserStatus(req, res, next) {
       return res.status(401).json({ error: 'Account not found', code: 'ACCOUNT_NOT_FOUND' });
     }
 
-    const user = await User.findById(req.user.id).select('is_active disabled_features');
+    const user = await User.findById(req.user.id).select('is_active disabled_features full_name username email');
     if (!user) {
       return res.status(401).json({ error: 'Account not found', code: 'ACCOUNT_NOT_FOUND' });
     }
@@ -27,6 +27,13 @@ async function checkUserStatus(req, res, next) {
     }
 
     req.user.disabledFeatures = user.disabled_features || [];
+    // Fresh from the DB (not the JWT) so a username/email change an admin
+    // just made is reflected immediately — and so activityLogger.js
+    // (which runs right after this middleware) always has a real name
+    // and email to write onto the log row.
+    req.user.full_name = user.full_name;
+    req.user.username = user.username;
+    req.user.email = user.email;
 
     next();
   } catch (err) {

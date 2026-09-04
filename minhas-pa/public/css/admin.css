@@ -1,0 +1,106 @@
+/* ===== Admin page — reuses stat-card / panel / loans-table / modal ===== */
+
+.admin-table td{vertical-align:middle;}
+
+/* ---- Role / plan mini selects inline in the table ---- */
+.inline-select{
+  background:var(--surface);
+  border:1px solid var(--border-strong);
+  color:var(--text-primary);
+  font-family:var(--font-body);
+  font-size:12.5px;
+  padding:6px 10px;
+  border-radius:8px;
+  cursor:pointer;
+}
+.inline-select:hover{border-color:var(--accent);}
+.inline-select.role-super_admin{color:var(--accent-hover);font-weight:600;}
+.inline-select.plan-premium{color:var(--accent-hover);font-weight:600;}
+
+/* ---- Active/disabled toggle switch ---- */
+.status-toggle{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  cursor:pointer;
+}
+.status-toggle input{display:none;}
+.toggle-track{
+  width:36px;height:20px;
+  border-radius:999px;
+  background:var(--border-strong);
+  position:relative;
+  transition:background 0.15s ease;
+  flex-shrink:0;
+}
+.toggle-track::after{
+  content:'';
+  position:absolute;
+  top:2px;left:2px;
+  width:16px;height:16px;
+  border-radius:50%;
+  background:#fff;
+  transition:transform 0.15s ease;
+}
+.status-toggle input:checked + .toggle-track{background:var(--success);}
+.status-toggle input:checked + .toggle-track::after{transform:translateX(16px);}
+.status-toggle-label{font-size:12px;color:var(--text-secondary);}
+
+/* ---- "Features" cell — shows a count + opens the popover ---- */
+.features-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  background:var(--surface);
+  border:1px solid var(--border-strong);
+  color:var(--text-secondary);
+  font-size:12px;
+  padding:6px 11px;
+  border-radius:999px;
+  cursor:pointer;
+}
+.features-btn:hover{border-color:var(--accent);color:var(--text-primary);}
+.features-btn .fb-count{
+  background:var(--danger);
+  color:#fff;
+  font-size:10px;
+  font-weight:700;
+  padding:1px 6px;
+  border-radius:999px;
+}
+.features-btn.all-on .fb-count{display:none;}
+
+/* ---- Feature toggle popover list ---- */
+.feature-toggle-list{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  padding:4px 2px 14px;
+}
+.feature-toggle-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 4px;
+  border-bottom:1px solid var(--border);
+}
+.feature-toggle-row:last-child{border-bottom:none;}
+.feature-toggle-name{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  font-size:13px;
+  color:var(--text-primary);
+}
+.feature-toggle-name i{color:var(--accent);font-size:15px;}
+
+.you-badge{
+  font-size:10px;
+  color:var(--text-tertiary,var(--text-secondary));
+  font-weight:500;
+  margin-left:6px;
+}
+
+@media (max-width: 900px){
+  .admin-table{min-width:900px;}
+}

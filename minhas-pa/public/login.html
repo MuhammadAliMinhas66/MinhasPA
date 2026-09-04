@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem("mpa-theme")||"dark";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<script>(function(){try{if(localStorage.getItem("mpa-token")){window.location.replace("index.html");}}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Log in — Minhas Personal Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.44.0/tabler-icons.min.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/auth.css">
+</head>
+<body class="auth-page">
+
+<div class="auth-shell">
+
+  <div class="auth-bg" aria-hidden="true">
+    <div class="auth-bg-blob auth-bg-blob-1"></div>
+    <div class="auth-bg-blob auth-bg-blob-2"></div>
+    <div class="auth-bg-grid"></div>
+
+    <svg class="auth-bg-chart" viewBox="0 0 600 200" preserveAspectRatio="none">
+      <path class="auth-bg-chart-line" d="M0,150 C60,120 90,170 150,110 C210,50 240,130 300,90 C360,50 390,110 450,70 C510,30 540,80 600,40" />
+      <path class="auth-bg-chart-fill" d="M0,150 C60,120 90,170 150,110 C210,50 240,130 300,90 C360,50 390,110 450,70 C510,30 540,80 600,40 L600,200 L0,200 Z" />
+    </svg>
+
+    <span class="auth-float auth-float-1"><i class="ti ti-currency-dollar"></i></span>
+    <span class="auth-float auth-float-2"><i class="ti ti-coin"></i></span>
+    <span class="auth-float auth-float-3"><i class="ti ti-chart-line"></i></span>
+    <span class="auth-float auth-float-4"><i class="ti ti-currency-rupee"></i></span>
+    <span class="auth-float auth-float-5"><i class="ti ti-wallet"></i></span>
+    <span class="auth-float auth-float-6"><i class="ti ti-trending-up"></i></span>
+  </div>
+
+  <div class="auth-card">
+    <div class="auth-brand">
+      <div class="brand-mark">M</div>
+      <div class="brand-text">Minhas<span>Personal Assistant</span></div>
+    </div>
+
+    <div class="auth-head">
+      <h1>Welcome back</h1>
+      <p>Log in to see your loans, rent, expenses &amp; savings.</p>
+    </div>
+
+    <div class="auth-error" id="authError"><i class="ti ti-alert-circle"></i><span id="authErrorText"></span></div>
+
+    <form class="auth-form" id="loginForm" novalidate>
+      <div class="auth-field">
+        <label for="loginIdentifier">Username or email</label>
+        <div class="auth-input-wrap">
+          <i class="ti ti-user"></i>
+          <input type="text" id="loginIdentifier" name="identifier" placeholder="hero_the_coder or you@email.com" autocomplete="username" required>
+        </div>
+      </div>
+
+      <div class="auth-field">
+        <label for="loginPassword">Password</label>
+        <div class="auth-input-wrap">
+          <i class="ti ti-lock"></i>
+          <input type="password" id="loginPassword" name="password" placeholder="••••••••" autocomplete="current-password" required>
+          <button type="button" class="auth-toggle-pw" data-target="loginPassword"><i class="ti ti-eye"></i></button>
+        </div>
+      </div>
+
+      <button type="submit" class="auth-submit" id="loginSubmit">
+        <i class="ti ti-login-2"></i>
+        <span>Log in</span>
+      </button>
+    </form>
+
+    <div class="auth-switch">Don't have an account? <a href="register.html">Create one</a></div>
+
+    <div class="auth-secure-note"><i class="ti ti-shield-check"></i> Passwords are hashed &amp; never stored in plain text</div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+</body>
+</html>

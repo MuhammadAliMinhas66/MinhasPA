@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem("mpa-theme")||"dark";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<script>(function(){try{if(!localStorage.getItem("mpa-token")){window.location.replace("login.html");}else{document.documentElement.classList.add("mpa-gate");}}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Salary Calculator — Minhas Personal Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.44.0/tabler-icons.min.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/auth.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/salary.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div class="brand-text">Minhas<span>Personal Assistant</span></div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Overview</div>
+      <a href="index.html" class="nav-item" data-page="dashboard"><i class="ti ti-layout-dashboard"></i><span>Dashboard</span></a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Money</div>
+      <a href="loans.html" class="nav-item" data-page="loans"><i class="ti ti-arrows-exchange"></i><span>Loans</span></a>
+      <a href="rent.html" class="nav-item" data-page="rent"><i class="ti ti-home-2"></i><span>Rent</span></a>
+      <a href="bills.html" class="nav-item" data-page="bills"><i class="ti ti-file-invoice"></i><span>Bills</span></a>
+      <a href="expenses.html" class="nav-item" data-page="expenses"><i class="ti ti-receipt"></i><span>Daily expenses</span></a>
+      <a href="savings.html" class="nav-item" data-page="savings"><i class="ti ti-trending-up"></i><span>Savings insights</span></a>
+      <a href="investments.html" class="nav-item" data-page="investments"><i class="ti ti-building-bank"></i><span>Investments</span></a>
+      <a href="committees.html" class="nav-item" data-page="committees"><i class="ti ti-users-group"></i><span>Committees</span></a>
+      <a href="salary.html" class="nav-item active" data-page="salary"><i class="ti ti-calculator"></i><span>Salary calculator</span></a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">System</div>
+      <div class="nav-item" data-page="settings"><i class="ti ti-settings"></i><span>Settings</span></div>
+      <button type="button" class="theme-toggle-btn" id="themeToggleBtn"><i class="ti ti-sun" id="themeToggleIcon"></i><span id="themeToggleLabel">Light mode</span></button>
+    </div>
+
+    <div class="sidebar-footer">
+      Connected to <strong style="color:var(--text-secondary)">MinhasPA</strong> (MSSQL)
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h1>Salary Calculator</h1>
+        <div class="topbar-sub">Plan out your salary before it disappears into a dozen things.</div>
+      </div>
+      <div class="topbar-right">
+        <div class="month-filter">
+          <select id="salaryMonth"></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- Hero: salary input + animated remaining -->
+      <div class="salary-hero">
+        <div class="salary-hero-left">
+          <label class="salary-input-label" for="salaryInput">Total salary this month</label>
+          <div class="salary-input-row">
+            <span class="salary-input-prefix">Rs</span>
+            <input type="number" id="salaryInput" placeholder="0" min="0" step="1">
+          </div>
+
+          <div class="quick-presets" id="quickPresets"></div>
+
+          <div class="hero-btn-row">
+            <button type="button" class="rule-btn" id="ruleBtn">
+              <i class="ti ti-wand"></i> Try the 50/30/20 rule
+            </button>
+            <button type="button" class="calc-save-btn" id="calcSaveBtn">
+              <i class="ti ti-device-floppy"></i> Calculate &amp; Save
+            </button>
+          </div>
+        </div>
+
+        <div class="salary-hero-right">
+          <div class="remaining-ring-wrap">
+            <svg class="remaining-ring" viewBox="0 0 160 160">
+              <circle class="ring-track" cx="80" cy="80" r="70"></circle>
+              <circle class="ring-fill" id="ringFill" cx="80" cy="80" r="70"></circle>
+            </svg>
+            <div class="remaining-ring-center">
+              <div class="remaining-label">Remaining</div>
+              <div class="remaining-value" id="remainingValue">Rs 0</div>
+              <div class="remaining-pct" id="remainingPct">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Smart Sync: pulls Loans/Rent/Bills/Committees straight in -->
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h2><i class="ti ti-refresh-dot" style="color:var(--accent)"></i> Smart sync</h2>
+            <p>Pull what's due this month straight from Loans, Rent, Bills &amp; Committees</p>
+          </div>
+        </div>
+        <div class="sync-grid" id="syncGrid">
+          <div class="empty-state"><i class="ti ti-loader-2"></i><span>Checking what's due…</span></div>
+        </div>
+
+        <!-- Shown only when this month has no rent record at all -->
+        <form class="quick-rent-form" id="quickRentForm">
+          <div class="quick-rent-title"><i class="ti ti-home-plus"></i> No rent recorded for this month yet</div>
+          <div class="quick-rent-row">
+            <input type="number" id="quickRentAmount" placeholder="Rent amount (Rs)" min="1" step="1" required>
+            <input type="date" id="quickRentDue" required>
+            <button type="submit"><i class="ti ti-plus"></i> Add rent for this month</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Allocation segmented bar -->
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Where it's going</h2>
+            <p>Every allocation, as a share of your total salary</p>
+          </div>
+        </div>
+        <div class="alloc-track" id="allocTrack"></div>
+        <div class="alloc-legend" id="allocLegend"></div>
+      </div>
+
+      <!-- Add allocation -->
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Add an allocation</h2>
+            <p>Rent, savings, bills, loans — anything you're planning to spend or set aside</p>
+          </div>
+        </div>
+        <form class="alloc-add-form" id="allocAddForm">
+          <input type="text" id="allocLabel" placeholder="e.g. Rent, Savings, Groceries" required autocomplete="off">
+          <input type="number" id="allocAmount" placeholder="Rs amount" min="1" step="1" required>
+          <button type="submit"><i class="ti ti-plus"></i> Add</button>
+        </form>
+
+        <div class="alloc-list" id="allocList"></div>
+      </div>
+
+      <!-- Salary history — every month calculated & saved -->
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Salary history</h2>
+            <p>Every month you've calculated, saved automatically</p>
+          </div>
+        </div>
+        <div id="historyList">
+          <div class="empty-state"><i class="ti ti-loader-2"></i><span>Loading history…</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/salary.js"></script>
+</body>
+</html>

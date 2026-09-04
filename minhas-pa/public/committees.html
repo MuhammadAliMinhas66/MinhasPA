@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem("mpa-theme")||"dark";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<script>(function(){try{if(!localStorage.getItem("mpa-token")){window.location.replace("login.html");}else{document.documentElement.classList.add("mpa-gate");}}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Committees — Minhas Personal Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.44.0/tabler-icons.min.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/auth.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/committees.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div class="brand-text">Minhas<span>Personal Assistant</span></div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Overview</div>
+      <a href="index.html" class="nav-item" data-page="dashboard"><i class="ti ti-layout-dashboard"></i><span>Dashboard</span></a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Money</div>
+      <a href="loans.html" class="nav-item" data-page="loans"><i class="ti ti-arrows-exchange"></i><span>Loans</span></a>
+      <a href="rent.html" class="nav-item" data-page="rent"><i class="ti ti-home-2"></i><span>Rent</span></a>
+      <a href="bills.html" class="nav-item" data-page="bills"><i class="ti ti-file-invoice"></i><span>Bills</span></a>
+      <a href="expenses.html" class="nav-item" data-page="expenses"><i class="ti ti-receipt"></i><span>Daily expenses</span></a>
+      <a href="savings.html" class="nav-item" data-page="savings"><i class="ti ti-trending-up"></i><span>Savings insights</span></a>
+      <a href="investments.html" class="nav-item" data-page="investments"><i class="ti ti-building-bank"></i><span>Investments</span></a>
+      <a href="committees.html" class="nav-item active" data-page="committees"><i class="ti ti-users-group"></i><span>Committees</span></a>
+      <a href="salary.html" class="nav-item" data-page="salary"><i class="ti ti-calculator"></i><span>Salary calculator</span></a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">System</div>
+      <div class="nav-item" data-page="settings"><i class="ti ti-settings"></i><span>Settings</span></div>
+      <button type="button" class="theme-toggle-btn" id="themeToggleBtn"><i class="ti ti-sun" id="themeToggleIcon"></i><span id="themeToggleLabel">Light mode</span></button>
+    </div>
+
+    <div class="sidebar-footer">
+      Connected to <strong style="color:var(--text-secondary)">MinhasPA</strong> (MSSQL)
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h1>Committees</h1>
+        <div class="topbar-sub">Every kameti, who you paid, how, and when.</div>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-primary" id="addCommitteeBtn"><i class="ti ti-plus" style="font-size:15px"></i> Add committee</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- This month's hero — the one number that actually matters -->
+      <div class="panel committee-hero">
+        <div class="committee-hero-left">
+          <div class="committee-hero-label">This month's committees</div>
+          <div class="committee-hero-value" id="heroThisMonthValue">Rs 0 <span id="heroThisMonthOf"></span></div>
+          <div class="committee-hero-sub" id="heroThisMonthSub">—</div>
+        </div>
+        <div class="committee-hero-right">
+          <div class="committee-hero-stat">
+            <span class="committee-hero-stat-label">Monthly commitment</span>
+            <span class="committee-hero-stat-value" id="statMonthly">Rs 0</span>
+          </div>
+          <div class="committee-hero-stat">
+            <span class="committee-hero-stat-label">Paid all-time</span>
+            <span class="committee-hero-stat-value" id="statPaidTotal">Rs 0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Due this month — quick action checklist -->
+      <div class="panel" id="dueThisMonthPanel" style="display:none">
+        <div class="panel-header">
+          <div>
+            <h2><i class="ti ti-calendar-due" style="color:var(--danger);margin-right:6px"></i>Still due this month</h2>
+            <p>Pay these before the month closes out</p>
+          </div>
+        </div>
+        <div class="due-list" id="dueList"></div>
+      </div>
+
+      <div class="committee-grid" id="committeeGrid">
+        <div class="empty-state"><i class="ti ti-loader-2"></i><span>Loading…</span></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Add / edit committee -->
+<div class="modal-overlay" id="committeeModalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="committeeModalTitle">Add a committee</h3>
+      <button class="modal-close" id="committeeModalClose"><i class="ti ti-x"></i></button>
+    </div>
+    <form id="committeeForm">
+      <input type="hidden" id="committeeId">
+
+      <div class="form-row">
+        <label for="committeeName">Committee name</label>
+        <input type="text" id="committeeName" placeholder="e.g. Office kameti, Gulzar Ali Raza" required>
+      </div>
+
+      <div class="form-row two-col">
+        <div>
+          <label for="committeeAmount">Monthly amount (Rs)</label>
+          <input type="number" id="committeeAmount" min="1" step="1" required>
+        </div>
+        <div>
+          <label for="committeeMembers">Members (optional)</label>
+          <input type="number" id="committeeMembers" min="1" step="1" placeholder="e.g. 10">
+        </div>
+      </div>
+      <p class="field-hint">Members = how many people are in this kameti, which is also how many months it runs (one payout each month). Leave blank if you're not sure.</p>
+
+      <div class="form-row two-col">
+        <div>
+          <label for="committeeStarted">Started (optional)</label>
+          <input type="date" id="committeeStarted">
+        </div>
+        <div>
+          <label for="committeePayout">Your payout month (optional)</label>
+          <input type="month" id="committeePayout">
+        </div>
+      </div>
+      <p class="field-hint">Only fill payout month in if the organizer has already told you which month you'll receive the lump sum.</p>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="committeeCancelBtn">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="committeeSaveBtn">Save committee</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Record a payment -->
+<div class="modal-overlay" id="paymentModalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Record a payment</h3>
+      <button class="modal-close" id="paymentModalClose"><i class="ti ti-x"></i></button>
+    </div>
+    <form id="paymentForm">
+      <input type="hidden" id="paymentCommitteeId">
+
+      <div class="form-row">
+        <label for="paymentMonth">Which month is this for?</label>
+        <input type="month" id="paymentMonth" required>
+      </div>
+
+      <div class="form-row two-col">
+        <div>
+          <label for="paymentDate" id="paymentDateLabel">Date paid</label>
+          <input type="date" id="paymentDate" required>
+        </div>
+        <div>
+          <label for="paymentMethod">Payment method</label>
+          <select id="paymentMethod">
+            <option value="">Not specified</option>
+            <option value="Cash">Cash</option>
+            <option value="Bank transfer">Bank transfer</option>
+            <option value="JazzCash">JazzCash</option>
+            <option value="Easypaisa">Easypaisa</option>
+            <option value="Cheque">Cheque</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="paid-other-box">
+        <label class="paid-other-checkbox">
+          <input type="checkbox" id="paidByOtherCheckbox">
+          <span><i class="ti ti-user-dollar"></i> Someone else paid this for me — I owe them back</span>
+        </label>
+        <div class="paid-other-field" id="payerNameField" style="display:none">
+          <label for="paymentPayerName">Who paid</label>
+          <input type="text" id="paymentPayerName" placeholder="e.g. Dad, Ahmed Bilal">
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="paymentCancelBtn">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="paymentSaveBtn">Save payment</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/committees.js"></script>
+</body>
+</html>

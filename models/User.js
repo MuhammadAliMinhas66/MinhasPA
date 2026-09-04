@@ -17,6 +17,7 @@ const userSchema = new mongoose.Schema({
   disabled_features: { type: [String], default: [] },
   created_at: { type: Date, default: Date.now },
   last_login_at: { type: Date, default: null },
+  last_seen_at: { type: Date, default: null },
 });
 
 applyIdTransform(userSchema);

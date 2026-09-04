@@ -60,8 +60,8 @@ router.get('/users', async (req, res) => {
     const enriched = users.map(u => {
       const json = u.toJSON();
       const activity = activityMap.get(json.id) || { last_activity_at: null, total_actions: 0, entries_added: 0 };
-      const isActiveNow = Boolean(
-        activity.last_activity_at && (now - new Date(activity.last_activity_at).getTime()) <= ACTIVE_WINDOW_MS
+            const isActiveNow = Boolean(
+        json.last_seen_at && (now - new Date(json.last_seen_at).getTime()) <= ACTIVE_WINDOW_MS
       );
       return {
         ...json,

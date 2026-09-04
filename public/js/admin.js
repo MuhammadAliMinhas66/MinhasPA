@@ -70,12 +70,12 @@ function activityStatusHtml(u) {
   if (u.is_active_now) {
     return `<span class="activity-badge live"><i class="ti ti-circle-filled"></i> Active now</span>`;
   }
-  if (!u.last_activity_at) {
+    const idleSince = u.last_seen_at || u.last_activity_at;
+  if (!idleSince) {
     return `<span class="activity-badge none"><i class="ti ti-moon-stars"></i> No activity yet</span>`;
   }
-  return `<span class="activity-badge idle"><i class="ti ti-clock"></i> ${escapeHtml(relativeTime(u.last_activity_at))}</span>`;
+  return `<span class="activity-badge idle"><i class="ti ti-clock"></i> ${escapeHtml(relativeTime(idleSince))}</span>`;
 }
-
 function relativeTime(iso) {
   const diffMs = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diffMs / 60000);

@@ -9,7 +9,8 @@
 // (4xx/5xx) are never logged (nothing actually changed). No request body
 // is ever stored verbatim — summary() only pulls a small, fixed allowlist
 // of harmless display fields, so things like passwords never end up here.
-const { ActivityLog } = require('../models');
+const { ActivityLog ,User} = require('../models');
+
 
 const ACTION_BY_METHOD = { POST: 'create', PUT: 'update', PATCH: 'update', DELETE: 'delete' };
 
@@ -55,7 +56,7 @@ function resourceIdFromUrl(originalUrl, params) {
 function activityLogger(req, res, next) {
   const method = req.method.toUpperCase();
   const action = ACTION_BY_METHOD[method];
-  if (!action) return next(); // only log mutating requests
+  
 
   const originalUrl = req.originalUrl;
   const capturedUser = req.user; // same reference will still be populated by the time 'finish' fires
@@ -63,6 +64,11 @@ function activityLogger(req, res, next) {
   res.on('finish', () => {
     if (res.statusCode >= 400) return; // request failed — nothing actually changed
     if (!capturedUser) return;
+        User.updateOne({ _id: capturedUser.id }, { last_seen_at: new Date() }).catch(err =>
+      console.error('Heartbeat write failed:', err.message)
+    );
+
+    if (!action) return;
 
     ActivityLog.create({
       user: capturedUser.id,

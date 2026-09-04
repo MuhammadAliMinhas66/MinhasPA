@@ -283,6 +283,9 @@
 
 
 
-@media (max-width: 720px){
-  .type-picker{grid-template-columns:repeat(3, 1fr);}
+@media (max-width: 480px){
+  /* 3 columns of icon+label buttons get cramped for longer labels like
+     "Cryptocurrency" or "Business" on narrow phones — 2 columns gives
+     each option enough width to stay legible and easy to tap. */
+  .type-picker{grid-template-columns:repeat(2, 1fr);}
 }

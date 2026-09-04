@@ -302,6 +302,18 @@
   cursor:pointer;
 }
 
+@media (max-width: 560px){
+  .budget-add-form{
+    flex-wrap:wrap;
+  }
+  .budget-add-form select, .budget-add-form input{
+    flex:1 1 130px;
+  }
+  .budget-add-form button{
+    flex:1 1 100%;
+  }
+}
+
 /* ===== Financial calendar ===== */
 .calendar-header-row{
   display:flex;

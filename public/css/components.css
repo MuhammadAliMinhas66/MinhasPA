@@ -414,6 +414,7 @@
   justify-content:flex-end;
   gap:10px;
   margin-top:18px;
+  flex-wrap:wrap;
 }
 
 /* ===== Expenses layout: sticky category rail + main column ===== */
@@ -1531,5 +1532,17 @@
 @media (max-width: 480px){
   .form-row.two-col{
     grid-template-columns:1fr;
+  }
+
+  /* Modal action buttons (Cancel/Save/Delete etc.) go full-width and
+     stack instead of squeezing into a row — appears in every modal
+     across the app (bills, loans, rent, expenses, investments,
+     committees, salary), so this one fix covers all of them. */
+  .modal-actions{
+    flex-direction:column-reverse;
+  }
+  .modal-actions .btn, .modal-actions .btn-primary, .modal-actions .btn-ghost, .modal-actions button{
+    width:100%;
+    justify-content:center;
   }
 }

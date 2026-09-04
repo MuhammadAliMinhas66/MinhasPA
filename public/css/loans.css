@@ -62,6 +62,18 @@
 
 .cal-filter.open .cal-popup{display:block;}
 
+@media (max-width: 480px){
+  /* Safety cap: 280px is close to the full width of small phones
+     (iPhone SE etc.), so a fixed width can occasionally push past the
+     left edge of the viewport depending on where the filter button
+     sits. Clamp it instead of hard-overriding the positioning. */
+  .cal-popup{
+    width:auto;
+    min-width:240px;
+    max-width:calc(100vw - 32px);
+  }
+}
+
 .cal-popup-header{
   display:flex;
   align-items:center;

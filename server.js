@@ -10,6 +10,7 @@ const { checkUserStatus } = require('./middleware/checkUserStatus');
 const { requireFeature } = require('./middleware/requireFeature');
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3000;
 
 if (!process.env.JWT_SECRET) {

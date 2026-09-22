@@ -1,0 +1,374 @@
+.field-hint{
+  font-size:11px;
+  color:var(--text-secondary);
+  margin:-8px 0 14px;
+  line-height:1.5;
+}
+
+/* ===== Committee cards grid ===== */
+.committee-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(340px, 1fr));
+  gap:16px;
+}
+
+.committee-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:18px 20px;
+  animation:cardIn 0.4s cubic-bezier(.16,1,.3,1) backwards;
+  transition:border-color 0.15s ease;
+}
+.committee-card:hover{ border-color:var(--border-strong); }
+.committee-card.completed{ opacity:0.6; }
+
+@keyframes cardIn{
+  from{ opacity:0; transform:translateY(10px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+
+.committee-card-top{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:14px;
+}
+
+.committee-avatar{
+  width:40px;height:40px;
+  border-radius:11px;
+  background:color-mix(in srgb, var(--avatar-color) 20%, transparent);
+  color:var(--avatar-color);
+  font-family:var(--font-display);
+  font-size:14px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+
+.committee-card-title{ display:flex; flex-direction:column; gap:1px; flex:1; min-width:0; }
+.committee-card-name{ font-size:14.5px; color:var(--text-primary); font-weight:500; }
+.committee-card-sub{ font-size:11.5px; color:var(--text-secondary); }
+
+/* ---- Rotation progress ---- */
+.committee-progress{ margin-bottom:14px; }
+
+.committee-progress-top{
+  display:flex;
+  justify-content:space-between;
+  font-size:11px;
+  color:var(--text-secondary);
+  margin-bottom:5px;
+}
+
+.committee-progress-track{
+  height:7px;
+  border-radius:999px;
+  background:var(--surface-3);
+  overflow:hidden;
+}
+
+.committee-progress-fill{
+  height:100%;
+  border-radius:999px;
+  transition:width 0.8s cubic-bezier(.16,1,.3,1);
+}
+
+/* ---- Meta row ---- */
+.committee-card-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px 14px;
+  font-size:11.5px;
+  color:var(--text-secondary);
+  margin-bottom:14px;
+}
+.committee-card-meta span{ display:inline-flex; align-items:center; gap:5px; }
+.committee-card-meta i{ font-size:13px; color:var(--accent); }
+
+/* ---- Actions ---- */
+.committee-card-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.committee-pay-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  background:var(--surface-2);
+  border:1px solid var(--border-strong);
+  color:var(--text-secondary);
+  border-radius:9px;
+  padding:8px 14px;
+  font-size:12.5px;
+  font-weight:500;
+  cursor:pointer;
+  transition:all 0.15s ease;
+}
+.committee-pay-btn:hover{ border-color:var(--accent); color:var(--text-primary); transform:translateY(-1px); }
+.committee-pay-btn.paid{
+  background:var(--success-dim);
+  border-color:color-mix(in srgb, var(--success) 40%, transparent);
+  color:var(--success);
+}
+.committee-pay-btn i{ font-size:15px; }
+
+.committee-history-toggle{
+  background:none;
+  border:none;
+  color:var(--text-secondary);
+  font-size:12px;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  padding:6px 4px;
+  transition:color 0.15s ease;
+}
+.committee-history-toggle:hover{ color:var(--accent-hover); }
+.committee-history-toggle i{ transition:transform 0.2s ease; font-size:13px; }
+
+/* ---- Payment history timeline ---- */
+.payment-timeline{
+  margin-top:16px;
+  padding-top:14px;
+  border-top:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  max-height:260px;
+  overflow-y:auto;
+}
+
+.timeline-item{
+  display:flex;
+  gap:11px;
+  padding:8px 2px;
+  animation:timelineIn 0.3s cubic-bezier(.16,1,.3,1) backwards;
+}
+
+@keyframes timelineIn{
+  from{ opacity:0; transform:translateX(-6px); }
+  to{ opacity:1; transform:translateX(0); }
+}
+
+.timeline-dot{
+  width:8px;height:8px;
+  border-radius:50%;
+  margin-top:5px;
+  flex-shrink:0;
+}
+
+.timeline-body{ flex:1; min-width:0; }
+
+.timeline-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+
+.timeline-month{ font-size:12.5px; color:var(--text-primary); font-weight:500; }
+
+.timeline-undo{
+  width:20px;height:20px;
+  border-radius:6px;
+  border:none;
+  background:none;
+  color:var(--text-secondary);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;
+  cursor:pointer;
+  opacity:0;
+  transition:all 0.15s ease;
+  flex-shrink:0;
+}
+.timeline-item:hover .timeline-undo{ opacity:1; }
+.timeline-undo:hover{ color:var(--danger); }
+
+.timeline-sub{
+  display:flex;
+  gap:12px;
+  font-size:11px;
+  color:var(--text-secondary);
+  margin-top:2px;
+}
+.timeline-sub span{ display:inline-flex; align-items:center; gap:4px; }
+.timeline-sub i{ font-size:12px; }
+.timeline-sub .dim{ opacity:0.6; font-style:italic; }
+
+@media (max-width: 720px){
+  .committee-grid{ grid-template-columns:1fr; }
+}
+
+/* ===== "This month" hero — replaces the 4 redundant stat cards ===== */
+.committee-hero{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:24px;
+  flex-wrap:wrap;
+  padding:24px 28px;
+  margin-bottom:18px;
+}
+
+.committee-hero-left{ display:flex; flex-direction:column; gap:5px; }
+.committee-hero-label{ font-size:12.5px; color:var(--text-secondary); }
+.committee-hero-value{ font-family:var(--font-display); font-size:32px; color:var(--text-primary); }
+.committee-hero-value span{ font-size:15px; color:var(--text-secondary); font-family:var(--font-body); }
+.committee-hero-sub{ font-size:12.5px; color:var(--text-secondary); display:flex; align-items:center; gap:6px; }
+
+.committee-hero-right{ display:flex; gap:28px; }
+.committee-hero-stat{ display:flex; flex-direction:column; gap:3px; align-items:flex-end; }
+.committee-hero-stat-label{ font-size:11px; color:var(--text-secondary); white-space:nowrap; }
+.committee-hero-stat-value{ font-family:var(--font-display); font-size:17px; color:var(--text-primary); }
+
+/* ===== Due this month — quick action checklist ===== */
+.due-list{ display:flex; flex-direction:column; gap:8px; }
+
+.due-item{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  padding:11px 14px;
+  border-radius:10px;
+  background:var(--danger-dim);
+  border:1px solid color-mix(in srgb, var(--danger) 35%, transparent);
+  animation:cardIn 0.35s cubic-bezier(.16,1,.3,1) backwards;
+}
+
+.due-item-dot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.due-item-name{ flex:1; font-size:13px; color:var(--text-primary); }
+.due-item-amt{ font-family:var(--font-display); font-size:13.5px; color:var(--text-primary); }
+
+.due-item-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  background:var(--danger);
+  color:#2a0f10;
+  border:none;
+  border-radius:8px;
+  padding:7px 12px;
+  font-size:12px;
+  font-weight:600;
+  cursor:pointer;
+  transition:filter 0.15s ease;
+}
+.due-item-btn:hover{ filter:brightness(1.1); }
+
+/* ===== Paid-by-other toggle in the payment modal ===== */
+.paid-other-box{
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:12px 14px;
+  margin-bottom:16px;
+}
+
+.paid-other-checkbox{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  cursor:pointer;
+  font-size:13px;
+  color:var(--text-primary);
+}
+.paid-other-checkbox input{ width:16px; height:16px; accent-color:var(--accent); cursor:pointer; }
+.paid-other-checkbox i{ color:var(--accent); font-size:14px; }
+
+.paid-other-field{ margin-top:10px; }
+.paid-other-field label{ font-size:11.5px; color:var(--text-secondary); display:block; margin-bottom:5px; }
+.paid-other-field input{
+  width:100%;
+  background:var(--surface-3);
+  border:1px solid var(--border-strong);
+  border-radius:8px;
+  padding:9px 11px;
+  color:var(--text-primary);
+  font-size:13px;
+  box-sizing:border-box;
+}
+
+/* ===== "You owe them back" line + inline reimburse date picker ===== */
+.timeline-owe{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  flex-wrap:wrap;
+  margin-top:6px;
+  padding:7px 10px;
+  border-radius:8px;
+  background:var(--danger-dim);
+  font-size:11.5px;
+  color:var(--danger);
+}
+.timeline-owe.settled{ background:var(--success-dim); color:var(--success); }
+.timeline-owe i{ font-size:13px; flex-shrink:0; }
+.timeline-owe span{ flex:1; }
+
+.timeline-reimburse-btn{
+  background:var(--surface-2);
+  border:1px solid var(--border-strong);
+  color:var(--text-primary);
+  border-radius:7px;
+  padding:4px 10px;
+  font-size:11px;
+  cursor:pointer;
+  flex-shrink:0;
+  transition:all 0.15s ease;
+}
+.timeline-reimburse-btn:hover{ border-color:var(--accent); }
+
+.reimburse-inline-form{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  margin-top:7px;
+  padding:8px 10px;
+  border-radius:8px;
+  background:var(--surface-3);
+  animation:timelineIn 0.2s ease;
+}
+.reimburse-date-input{
+  flex:1;
+  background:var(--surface-2);
+  border:1px solid var(--border-strong);
+  border-radius:7px;
+  padding:6px 9px;
+  color:var(--text-primary);
+  font-size:12px;
+}
+.reimburse-confirm-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  background:var(--success);
+  color:#0d2b20;
+  border:none;
+  border-radius:7px;
+  padding:6px 11px;
+  font-size:11.5px;
+  font-weight:600;
+  cursor:pointer;
+  flex-shrink:0;
+}
+.reimburse-close-btn{
+  width:26px;height:26px;
+  border-radius:7px;
+  border:1px solid var(--border-strong);
+  background:none;
+  color:var(--text-secondary);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  flex-shrink:0;
+}
+
+@media (max-width: 720px){
+  .committee-hero{ flex-direction:column; align-items:flex-start; }
+  .committee-hero-right{ width:100%; justify-content:space-between; }
+  .committee-hero-stat{ align-items:flex-start; }
+}

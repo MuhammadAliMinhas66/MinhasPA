@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem("mpa-theme")||"dark";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<script>(function(){try{if(!localStorage.getItem("mpa-token")){window.location.replace("login.html");}else{document.documentElement.classList.add("mpa-gate");}}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mess — Minhas Personal Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.44.0/tabler-icons.min.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/auth.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/mess.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div class="brand-text">Minhas<span>Personal Assistant</span></div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Overview</div>
+      <a href="index.html" class="nav-item" data-page="dashboard"><i class="ti ti-layout-dashboard"></i><span>Dashboard</span></a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Money</div>
+      <a href="loans.html" class="nav-item" data-page="loans"><i class="ti ti-arrows-exchange"></i><span>Loans</span></a>
+      <a href="rent.html" class="nav-item" data-page="rent"><i class="ti ti-home-2"></i><span>Rent</span></a>
+      <a href="bills.html" class="nav-item" data-page="bills"><i class="ti ti-file-invoice"></i><span>Bills</span></a>
+      <a href="expenses.html" class="nav-item" data-page="expenses"><i class="ti ti-receipt"></i><span>Daily expenses</span></a>
+      <a href="savings.html" class="nav-item" data-page="savings"><i class="ti ti-trending-up"></i><span>Savings insights</span></a>
+      <a href="investments.html" class="nav-item" data-page="investments"><i class="ti ti-building-bank"></i><span>Investments</span></a>
+      <a href="committees.html" class="nav-item" data-page="committees"><i class="ti ti-users-group"></i><span>Committees</span></a>
+      <a href="salary.html" class="nav-item" data-page="salary"><i class="ti ti-calculator"></i><span>Salary calculator</span></a>
+      <a href="mess.html" class="nav-item active" data-page="mess"><i class="ti ti-tools-kitchen-2"></i><span>Mess (food)</span></a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">System</div>
+      <div class="nav-item" data-page="settings"><i class="ti ti-settings"></i><span>Settings</span></div>
+      <button type="button" class="theme-toggle-btn" id="themeToggleBtn"><i class="ti ti-sun" id="themeToggleIcon"></i><span id="themeToggleLabel">Light mode</span></button>
+    </div>
+
+    <div class="sidebar-footer">
+      Connected to <strong style="color:var(--text-secondary)">MinhasPA</strong>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h1>Mess</h1>
+        <div class="topbar-sub">Cook together, split fairly — menu, purchases, and who owes what.</div>
+      </div>
+      <div class="topbar-right mess-toolbar" id="messToolbar">
+        <!-- Group switcher + create/join buttons are injected here once groups load -->
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- Shown only when the user has no mess groups yet -->
+      <div class="panel mess-onboard" id="messOnboardPanel" style="display:none">
+        <i class="ti ti-tools-kitchen-2"></i>
+        <h2>No mess group yet</h2>
+        <p>Start one with your flatmates or friends and split the daily cooking cost fairly — or join a group someone already started using their invite code.</p>
+        <div class="mess-onboard-actions">
+          <button class="btn btn-primary" id="onboardCreateBtn"><i class="ti ti-plus" style="font-size:15px"></i> Create a mess group</button>
+          <button class="btn btn-ghost" id="onboardJoinBtn"><i class="ti ti-door-enter" style="font-size:15px"></i> Join with a code</button>
+        </div>
+      </div>
+
+      <!-- Everything below only renders once a group is selected -->
+      <div id="messMainArea" style="display:none">
+
+        <div class="panel mess-group-header">
+          <div class="mess-group-identity">
+            <div class="mess-group-avatar" id="groupAvatar">M</div>
+            <div>
+              <div class="mess-group-title" id="groupTitle">—</div>
+              <div class="mess-group-sub" id="groupSub">—</div>
+            </div>
+          </div>
+          <div class="mess-group-right">
+            <div class="avatar-stack" id="groupAvatarStack"></div>
+            <div class="invite-chip" id="inviteChip" title="Click to copy invite code">
+              <i class="ti ti-key"></i><span id="inviteCodeText">—</span><i class="ti ti-copy"></i>
+            </div>
+            <button class="btn btn-ghost" id="manageMembersBtn"><i class="ti ti-users-group" style="font-size:15px"></i> Members</button>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:16px">
+          <div class="panel-header">
+            <div>
+              <h2><i class="ti ti-pig-money"></i>Mess fund</h2>
+              <p>What everyone's putting in vs what's been spent</p>
+            </div>
+            <span class="fund-round-badge" id="fundRoundBadge">Round 1</span>
+          </div>
+
+          <div class="fund-hero">
+            <div class="fund-hero-stat">
+              <span class="fund-hero-stat-label">Collected this round</span>
+              <span class="fund-hero-stat-value" id="fundCollected">Rs 0</span>
+            </div>
+            <div class="fund-hero-stat">
+              <span class="fund-hero-stat-label">Total spent (all time)</span>
+              <span class="fund-hero-stat-value" id="fundSpent">Rs 0</span>
+            </div>
+            <div class="fund-hero-stat">
+              <span class="fund-hero-stat-label">Fund balance</span>
+              <span class="fund-hero-stat-value accent" id="fundBalance">Rs 0</span>
+            </div>
+          </div>
+
+          <div class="fund-target-row" id="fundTargetOwnerRow">
+            <label style="font-size:12.5px;color:var(--text-secondary)">Collect</label>
+            <input type="number" id="fundTargetInput" min="0" step="1">
+            <label style="font-size:12.5px;color:var(--text-secondary)">from each person</label>
+            <button class="btn btn-ghost" id="fundTargetSaveBtn">Save</button>
+            <button class="btn btn-ghost" id="fundNewRoundBtn"><i class="ti ti-refresh" style="font-size:14px"></i> Start new round</button>
+          </div>
+          <div class="fund-target-row" id="fundTargetMemberRow" style="display:none">
+            <span style="font-size:12.5px;color:var(--text-secondary)">Target: <strong id="fundTargetReadonly" style="color:var(--text-primary)">Rs 0</strong> from each person, this round</span>
+          </div>
+
+          <div class="table-scroll">
+            <table class="fund-member-table">
+              <thead><tr><th>Member</th><th>Paid</th><th>Remaining</th><th>Status</th><th></th></tr></thead>
+              <tbody id="fundTableBody">
+                <tr><td colspan="5"><div class="empty-state"><i class="ti ti-loader-2"></i><span>Loading…</span></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:16px">
+          <div class="panel-header">
+            <div>
+              <h2><i class="ti ti-calendar-event"></i>Day</h2>
+              <p>Menu, who ate, and today's spend</p>
+            </div>
+            <div class="day-nav">
+              <button class="day-nav-btn" id="dayPrevBtn"><i class="ti ti-chevron-left"></i></button>
+              <input type="date" id="dayDateInput">
+              <button class="day-nav-btn" id="dayNextBtn"><i class="ti ti-chevron-right"></i></button>
+              <button class="day-nav-today" id="dayTodayBtn">Today</button>
+            </div>
+          </div>
+
+          <div class="mess-hero">
+            <div class="mess-hero-stat">
+              <span class="mess-hero-stat-label">Total spent today</span>
+              <span class="mess-hero-stat-value" id="heroTotal">Rs 0</span>
+            </div>
+            <div class="mess-hero-stat">
+              <span class="mess-hero-stat-label">Eating today</span>
+              <span class="mess-hero-stat-value" id="heroHeadcount">0</span>
+            </div>
+            <div class="mess-hero-stat">
+              <span class="mess-hero-stat-label">Cost per head</span>
+              <span class="mess-hero-stat-value accent" id="heroPerHead">Rs 0</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mess-grid-2" style="margin-top:16px">
+
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <h2><i class="ti ti-tools-kitchen-2"></i>Menu</h2>
+                <p>What's being cooked today</p>
+              </div>
+            </div>
+            <div class="menu-chip-list" id="menuChipList"></div>
+            <div class="menu-add-row" id="menuAddRow">
+              <input type="text" id="menuItemInput" placeholder="Add a dish, e.g. Chicken karahi" maxlength="60">
+              <button class="btn btn-primary" id="menuAddBtn"><i class="ti ti-plus" style="font-size:15px"></i></button>
+            </div>
+            <textarea class="menu-notes" id="menuNotesInput" placeholder="Notes (optional) — e.g. cooking turn, timing"></textarea>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <h2><i class="ti ti-users"></i>Who's eating</h2>
+                <p>Exclude anyone who isn't home today</p>
+              </div>
+            </div>
+            <div class="attendance-list" id="attendanceList">
+              <div class="empty-state"><i class="ti ti-loader-2"></i><span>Loading…</span></div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="panel" style="margin-top:16px">
+          <div class="panel-header">
+            <div>
+              <h2><i class="ti ti-clipboard-list"></i>Today's duties</h2>
+              <p>Who's cooking, who's washing up, who's getting the groceries</p>
+            </div>
+          </div>
+          <div class="duty-quick-add" id="dutyQuickAdd">
+            <button type="button" class="btn-pill" data-duty="Cooking"><i class="ti ti-tools-kitchen-2"></i> Cooking</button>
+            <button type="button" class="btn-pill" data-duty="Dishwashing"><i class="ti ti-droplet"></i> Dishwashing</button>
+            <button type="button" class="btn-pill" data-duty="Groceries"><i class="ti ti-shopping-cart"></i> Groceries</button>
+          </div>
+          <div class="duty-list" id="dutyList"></div>
+          <div class="menu-add-row" id="dutyCustomRow" style="margin-top:12px">
+            <input type="text" id="dutyCustomInput" placeholder="Or add a custom duty…" maxlength="60">
+            <button class="btn btn-primary" id="dutyCustomAddBtn"><i class="ti ti-plus" style="font-size:15px"></i></button>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:16px">
+          <div class="panel-header">
+            <div>
+              <h2><i class="ti ti-receipt"></i>Ingredients &amp; purchases</h2>
+              <p>Everything bought for today's cooking</p>
+            </div>
+            <button class="btn btn-primary" id="addExpenseBtn"><i class="ti ti-plus" style="font-size:15px"></i> Add item</button>
+          </div>
+          <div class="table-scroll">
+            <table class="mess-expense-table">
+              <thead>
+                <tr><th>Item</th><th>Category</th><th>Paid by</th><th>Cost</th><th></th></tr>
+              </thead>
+              <tbody id="expenseTableBody">
+                <tr><td colspan="5"><div class="empty-state"><i class="ti ti-loader-2"></i><span>Loading…</span></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:16px">
+          <div class="panel-header">
+            <div>
+              <h2><i class="ti ti-scale"></i>Settle up</h2>
+              <p>Who paid, who owes — across a date range</p>
+            </div>
+            <div class="mess-summary-range">
+              <input type="date" id="summaryFromInput">
+              <span style="color:var(--text-secondary);font-size:12px">to</span>
+              <input type="date" id="summaryToInput">
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table class="mess-expense-table">
+              <thead>
+                <tr><th>Member</th><th>Paid</th><th>Share</th><th>Balance</th></tr>
+              </thead>
+              <tbody id="summaryTableBody">
+                <tr><td colspan="4"><div class="empty-state"><i class="ti ti-loader-2"></i><span>Loading…</span></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Create group -->
+<div class="modal-overlay" id="createGroupModalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Create a mess group</h3>
+      <button class="modal-close" id="createGroupModalClose"><i class="ti ti-x"></i></button>
+    </div>
+    <form id="createGroupForm">
+      <div class="form-row">
+        <label for="createGroupName">Group name</label>
+        <input type="text" id="createGroupName" placeholder="e.g. Hostel Room 4, Flat 302" required maxlength="80">
+      </div>
+      <div class="form-row">
+        <label for="createGroupCurrency">Currency label</label>
+        <input type="text" id="createGroupCurrency" value="Rs" maxlength="10">
+      </div>
+      <p class="field-hint">You'll get an invite code right after — share it with your friends so they can join from their own accounts.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="createGroupCancelBtn">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="createGroupSaveBtn">Create group</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Join group -->
+<div class="modal-overlay" id="joinGroupModalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Join a mess group</h3>
+      <button class="modal-close" id="joinGroupModalClose"><i class="ti ti-x"></i></button>
+    </div>
+    <form id="joinGroupForm">
+      <div class="form-row">
+        <label for="joinGroupCode">Invite code</label>
+        <input type="text" id="joinGroupCode" placeholder="e.g. MESS-7F3K2Q" required maxlength="20" style="text-transform:uppercase;font-family:var(--font-mono)">
+      </div>
+      <p class="field-hint">Ask whoever created the group for their invite code — it's shown at the top of their Mess page.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="joinGroupCancelBtn">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="joinGroupSaveBtn">Join group</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Add / edit expense -->
+<div class="modal-overlay" id="expenseModalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="expenseModalTitle">Add an item</h3>
+      <button class="modal-close" id="expenseModalClose"><i class="ti ti-x"></i></button>
+    </div>
+    <form id="expenseForm">
+      <input type="hidden" id="expenseId">
+
+      <div class="form-row">
+        <label for="expenseItemName">Item name</label>
+        <input type="text" id="expenseItemName" placeholder="e.g. Chicken, Rice, Cooking oil" required maxlength="120">
+      </div>
+
+      <div class="form-row two-col">
+        <div>
+          <label for="expenseCategory">Category</label>
+          <select id="expenseCategory">
+            <option value="ingredient">Ingredient</option>
+            <option value="purchased">Purchased item</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div>
+          <label for="expenseCost">Cost (Rs)</label>
+          <input type="number" id="expenseCost" min="0" step="1" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label for="expensePaidBy">Paid by</label>
+        <select id="expensePaidBy"></select>
+      </div>
+
+      <div class="form-row">
+        <label for="expenseNotes">Notes (optional)</label>
+        <input type="text" id="expenseNotes" placeholder="e.g. from the corner shop" maxlength="300">
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="expenseCancelBtn">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="expenseSaveBtn">Save item</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Record a fund payment -->
+<div class="modal-overlay" id="paymentModalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Record a payment</h3>
+      <button class="modal-close" id="paymentModalClose"><i class="ti ti-x"></i></button>
+    </div>
+    <form id="paymentForm">
+      <div class="form-row">
+        <label for="paymentMember">Who paid</label>
+        <select id="paymentMember"></select>
+      </div>
+      <div class="form-row two-col">
+        <div>
+          <label for="paymentAmount">Amount (Rs)</label>
+          <input type="number" id="paymentAmount" min="0" step="1" required>
+        </div>
+        <div>
+          <label for="paymentDate">Date</label>
+          <input type="date" id="paymentDate" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <label for="paymentNotes">Notes (optional)</label>
+        <input type="text" id="paymentNotes" placeholder="e.g. cash, easypaisa" maxlength="200">
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="paymentCancelBtn">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="paymentSaveBtn">Save payment</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Manage members -->
+<div class="modal-overlay" id="membersModalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Members</h3>
+      <button class="modal-close" id="membersModalClose"><i class="ti ti-x"></i></button>
+    </div>
+    <div id="membersModalBody"></div>
+    <div class="modal-actions" id="membersModalActions" style="justify-content:space-between">
+      <button type="button" class="btn btn-ghost" id="leaveGroupBtn"><i class="ti ti-door-exit" style="font-size:15px"></i> Leave group</button>
+      <button type="button" class="btn btn-ghost" id="regenerateCodeBtn" style="display:none"><i class="ti ti-refresh" style="font-size:15px"></i> New invite code</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/mess.js"></script>
+</body>
+</html>
